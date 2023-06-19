@@ -4,12 +4,16 @@ import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LoginScreen from './screens/Auth/index' 
 import EventScreen from './screens/Events/index'
+import Navigation from './navigation';
 
 export default function App() {
   return (
+    <Navigation />
+  )
+  // return (
     // <LoginScreen></LoginScreen>
-    <EventScreen></EventScreen>
-  );
+    // <EventScreen></EventScreen>
+  // );
 }
 
 const styles = StyleSheet.create({
