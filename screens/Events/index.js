@@ -1,63 +1,43 @@
-import * as React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Button, Alert, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ThreeCarImage from '../../assets/images/threeCar.png'
 import colors from '../../styles/colors';
 import common from '../../styles/common';
 
+
 export default function App() {
+    const [showOption, setShowOption] = useState(false);
+
     return (
         <SafeAreaView>
             <View style={common.container}>
-                <View style={styles.headerPart}>
-                    <Text style={styles.headerText}>Événements à venir</Text>
+                <View style={common.headerPart}>
+                    <Text style={common.headerText}>Événements à venir</Text>
                 </View>
-                <ScrollView style={styles.mainContent}>
+                <ScrollView style={common.mainContent}>
                     <View style={styles.cardPart}>
                         <View style={styles.cardBox}>
-                            <View style={styles.cardTextPart}>
-                                <View style={styles.leftText}>
-                                    <Text style={styles.contentText}>Ali Demo | +33610487960</Text>
-                                    <Text style={styles.contentText}>Boîte : manuelle</Text>
-                                    <Text style={styles.contentText}>Type : Conduite</Text>
+                            <View style={common.cardTextPart}>
+                                <View style={common.leftText}>
+                                    <Text style={common.contentText}>Ali Demo | +33610487960</Text>
+                                    <Text style={common.contentText}>Boîte : manuelle</Text>
+                                    <Text style={common.contentText}>Type : Conduite</Text>
                                 </View>
-                                <View style={styles.rightText}>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>10/03/2023</Text>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>15h00</Text>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>2h</Text>
-                                </View>
-                            </View>
-                            <View style={styles.cardBtn}>
-                                <TouchableOpacity style={styles.cardOutlineBtn}>
-                                    <Text style={styles.cardBtnText}>Present</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.cardFillBtn}>
-                                    <Text style={styles.cardBtnText}>Absent</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                        <View style={styles.cardBox}>
-                            <View style={styles.cardTextPart}>
-                                <View style={styles.leftText}>
-                                    <Text style={styles.contentText}>Ali Demo | +33610487960</Text>
-                                    <Text style={styles.contentText}>Boîte : manuelle</Text>
-                                    <Text style={styles.contentText}>Type : Conduite</Text>
-                                </View>
-                                <View style={styles.rightText}>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>10/03/2023</Text>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>15h00</Text>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>2h</Text>
+                                <View style={common.rightText}>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>10/03/2023</Text>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>15h00</Text>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>2h</Text>
                                 </View>
                             </View>
                             <View style={styles.cardBtn}>
-                                <TouchableOpacity style={styles.cardOutlineBtn}>
+                                <TouchableOpacity style={styles.cardOutlineBtn} onPress={() => setShowOption(true)}>
                                     <Text style={styles.cardBtnText}>Present</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.cardFillBtn}>
+                                <TouchableOpacity style={styles.cardFillBtn} onPress={() => setShowOption(false)}>
                                     <Text style={styles.cardBtnText}>Absent</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={styles.openableCard}>
+                            {showOption && <View style={styles.openableCard}>
                                 <Text style={styles.openCardHeading}>commentaire</Text>
                                 <View style={styles.whiteCard}>
                                     <Text style={styles.whiteCardContent}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</Text>
@@ -70,70 +50,98 @@ export default function App() {
                                         <Text style={styles.cardBtnText}>Annuler</Text>
                                     </TouchableOpacity>
                                 </View>
-                            </View>
+                            </View>}
                         </View>
                         <View style={styles.cardBox}>
-                            <View style={styles.cardTextPart}>
-                                <View style={styles.leftText}>
-                                    <Text style={styles.contentText}>Ali Demo | +33610487960</Text>
-                                    <Text style={styles.contentText}>Boîte : manuelle</Text>
-                                    <Text style={styles.contentText}>Type : Conduite</Text>
+                            <View style={common.cardTextPart}>
+                                <View style={common.leftText}>
+                                    <Text style={common.contentText}>Ali Demo | +33610487960</Text>
+                                    <Text style={common.contentText}>Boîte : manuelle</Text>
+                                    <Text style={common.contentText}>Type : Conduite</Text>
                                 </View>
-                                <View style={styles.rightText}>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>10/03/2023</Text>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>15h00</Text>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>2h</Text>
+                                <View style={common.rightText}>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>10/03/2023</Text>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>15h00</Text>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>2h</Text>
                                 </View>
                             </View>
                             <View style={styles.cardBtn}>
-                                <TouchableOpacity style={styles.cardOutlineBtn}>
+                                <TouchableOpacity style={styles.cardOutlineBtn} onPress={() => setShowOption(true)}>
                                     <Text style={styles.cardBtnText}>Present</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.cardFillBtn}>
+                                <TouchableOpacity style={styles.cardFillBtn} onPress={() => setShowOption(false)}>
                                     <Text style={styles.cardBtnText}>Absent</Text>
                                 </TouchableOpacity>
                             </View>
+                            {showOption && <View style={styles.openableCard}>
+                                <Text style={styles.openCardHeading}>commentaire</Text>
+                                <View style={styles.whiteCard}>
+                                    <Text style={styles.whiteCardContent}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</Text>
+                                </View>
+                                <View style={styles.cardBtn}>
+                                    <TouchableOpacity style={styles.cardOutlineBtn}>
+                                        <Text style={styles.cardBtnText}>Ok</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.cardFillBtn}>
+                                        <Text style={styles.cardBtnText}>Annuler</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>}
+                        </View>
+                        <View style={styles.cardBox}>
+                            <View style={common.cardTextPart}>
+                                <View style={common.leftText}>
+                                    <Text style={common.contentText}>Ali Demo | +33610487960</Text>
+                                    <Text style={common.contentText}>Boîte : manuelle</Text>
+                                    <Text style={common.contentText}>Type : Conduite</Text>
+                                </View>
+                                <View style={common.rightText}>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>10/03/2023</Text>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>15h00</Text>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>2h</Text>
+                                </View>
+                            </View>
+                            <View style={styles.cardBtn}>
+                                <TouchableOpacity style={styles.cardOutlineBtn} onPress={() => setShowOption(true)}>
+                                    <Text style={styles.cardBtnText}>Present</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.cardFillBtn} onPress={() => setShowOption(false)}>
+                                    <Text style={styles.cardBtnText}>Absent</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {showOption && <View style={styles.openableCard}>
+                                <Text style={styles.openCardHeading}>commentaire</Text>
+                                <View style={styles.whiteCard}>
+                                    <Text style={styles.whiteCardContent}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</Text>
+                                </View>
+                                <View style={styles.cardBtn}>
+                                    <TouchableOpacity style={styles.cardOutlineBtn}>
+                                        <Text style={styles.cardBtnText}>Ok</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.cardFillBtn}>
+                                        <Text style={styles.cardBtnText}>Annuler</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>}
                         </View>
                     </View>
                 </ScrollView>
-                <View style={styles.headerPart}>
-                    <Text style={styles.headerText}>événements passés à confirmer</Text>
+                <View style={common.headerPart}>
+                    <Text style={common.headerText}>événements passés à confirmer</Text>
                 </View>
-                <ScrollView style={styles.mainContent}>
+                <ScrollView style={common.mainContent}>
                     <View style={styles.cardPart}>
                         <View style={{ ...styles.cardBox, ...styles.cardBoxGray }}>
-                            <View style={styles.cardTextPart}>
-                                <View style={styles.leftText}>
-                                    <Text style={styles.contentText}>Ali Demo | +33610487960</Text>
-                                    <Text style={styles.contentText}>Boîte : manuelle</Text>
-                                    <Text style={styles.contentText}>Type : Conduite</Text>
+                            <View style={common.cardTextPart}>
+                                <View style={common.leftText}>
+                                    <Text style={common.contentText}>Ali Demo | +33610487960</Text>
+                                    <Text style={common.contentText}>Boîte : manuelle</Text>
+                                    <Text style={common.contentText}>Type : Conduite</Text>
                                 </View>
-                                <View style={styles.rightText}>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>10/03/2023</Text>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>15h00</Text>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>2h</Text>
-                                </View>
-                            </View>
-                            <View style={styles.cardBtn}>
-                                <TouchableOpacity style={styles.cardOutlineBtn}>
-                                    <Text style={styles.cardBtnText}>Present</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.cardFillBtn}>
-                                    <Text style={styles.cardBtnText}>Absent</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                        <View style={{ ...styles.cardBox, ...styles.cardBoxGray }}>
-                            <View style={styles.cardTextPart}>
-                                <View style={styles.leftText}>
-                                    <Text style={styles.contentText}>Ali Demo | +33610487960</Text>
-                                    <Text style={styles.contentText}>Boîte : manuelle</Text>
-                                    <Text style={styles.contentText}>Type : Conduite</Text>
-                                </View>
-                                <View style={styles.rightText}>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>10/03/2023</Text>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>15h00</Text>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>2h</Text>
+                                <View style={common.rightText}>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>10/03/2023</Text>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>15h00</Text>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>2h</Text>
                                 </View>
                             </View>
                             <View style={styles.cardBtn}>
@@ -146,16 +154,38 @@ export default function App() {
                             </View>
                         </View>
                         <View style={{ ...styles.cardBox, ...styles.cardBoxGray }}>
-                            <View style={styles.cardTextPart}>
-                                <View style={styles.leftText}>
-                                    <Text style={styles.contentText}>Ali Demo | +33610487960</Text>
-                                    <Text style={styles.contentText}>Boîte : manuelle</Text>
-                                    <Text style={styles.contentText}>Type : Conduite</Text>
+                            <View style={common.cardTextPart}>
+                                <View style={common.leftText}>
+                                    <Text style={common.contentText}>Ali Demo | +33610487960</Text>
+                                    <Text style={common.contentText}>Boîte : manuelle</Text>
+                                    <Text style={common.contentText}>Type : Conduite</Text>
                                 </View>
-                                <View style={styles.rightText}>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>10/03/2023</Text>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>15h00</Text>
-                                    <Text style={{ ...styles.contentText, ...styles.contentTextRight }}>2h</Text>
+                                <View style={common.rightText}>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>10/03/2023</Text>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>15h00</Text>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>2h</Text>
+                                </View>
+                            </View>
+                            <View style={styles.cardBtn}>
+                                <TouchableOpacity style={styles.cardOutlineBtn}>
+                                    <Text style={styles.cardBtnText}>Present</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.cardFillBtn}>
+                                    <Text style={styles.cardBtnText}>Absent</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        <View style={{ ...styles.cardBox, ...styles.cardBoxGray }}>
+                            <View style={common.cardTextPart}>
+                                <View style={common.leftText}>
+                                    <Text style={common.contentText}>Ali Demo | +33610487960</Text>
+                                    <Text style={common.contentText}>Boîte : manuelle</Text>
+                                    <Text style={common.contentText}>Type : Conduite</Text>
+                                </View>
+                                <View style={common.rightText}>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>10/03/2023</Text>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>15h00</Text>
+                                    <Text style={{ ...common.contentText, ...common.contentTextRight }}>2h</Text>
                                 </View>
                             </View>
                             <View style={styles.cardBtn}>
@@ -175,21 +205,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-    headerPart: {
-        backgroundColor: colors.secondary,
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-    },
-    headerText: {
-        color: colors.white,
-        fontSize: 18,
-        fontWeight: 600,
-        fontStyle: 'italic',
-    },
-    mainContent: {
-        marginVertical: 10,
-        marginHorizontal: 10,
-    },
     cardBox: {
         backgroundColor: colors.secondary,
         borderRadius: 25,
@@ -200,29 +215,22 @@ const styles = StyleSheet.create({
     cardBoxGray: {
         backgroundColor: colors.gray,
     },
-    cardTextPart: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        flexDirection: 'row',
+    openableCard: {
+        marginTop: 10,
     },
-    leftText: {
-        flex: 2,
-        borderRightWidth: 1,
-        borderColor: colors.white,
-    },
-    rightText: {
-        flex: 1,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-    },
-    contentText: {
+    openCardHeading: {
         color: colors.white,
-        marginBottom: 10,
     },
-    contentTextRight: {
-        fontWeight: 600,
+    whiteCard: {
+        backgroundColor: colors.white,
+        marginTop: 10,
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: 18,
+    },
+    whiteCardContent: {
+        fontSize: 12,
+        lineHeight: 22,
     },
     cardBtn: {
         display: 'flex',
@@ -252,21 +260,5 @@ const styles = StyleSheet.create({
         color: colors.white,
         fontSize: 15,
     },
-    openableCard: {
-        marginTop: 10,
-    },
-    openCardHeading: {
-        color: colors.white,
-    },
-    whiteCard: {
-        backgroundColor: colors.white,
-        marginTop: 10,
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: 18,
-    },
-    whiteCardContent: {
-        fontSize: 12,
-        lineHeight: 22,
-    },
+
 });
