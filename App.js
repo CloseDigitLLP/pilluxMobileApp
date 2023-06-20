@@ -4,20 +4,16 @@ import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LoginScreen from './screens/Auth/index' 
 import EventScreen from './screens/Events/index'
-import ExamPlace from './screens/Exams/place';
-import ExamReadyStudent from './screens/Exams';
-import ExamHours from './screens/Exams/hours';
-import StepedStudent from './screens/StespWorked';
+import Navigation from './navigation';
 
 export default function App() {
   return (
+    <Navigation />
+  )
+  // return (
     // <LoginScreen></LoginScreen>
-    <EventScreen></EventScreen>
-    // <StepedStudent />
-    // <ExamHours />
-    // <ExamPlace />
-    // <ExamReadyStudent />
-  );
+    // <EventScreen></EventScreen>
+  // );
 }
 
 const styles = StyleSheet.create({
