@@ -4,9 +4,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ThreeCarImage from '../../assets/images/threeCar.png'
 import colors from '../../styles/colors';
 import common from '../../styles/common';
+import { login } from '../../services/Auth/actions';
+import { connect } from 'react-redux';
 
-export default function App(){
+function Auth(props){
     const [value, onChangeText] = React.useState('Useless Placeholder');
+    const [email, setEmail] = React.useState('')
+    const [password, setPassword] = React.useState('')
+
+    const handleLogin = () => {
+        props.login(email, password)
+    }
+
     return (
         <SafeAreaView>
             <View style={common.container}>
@@ -21,16 +30,16 @@ export default function App(){
                         <View style={styles.field}>
                             <Text style={styles.fieldLabel}>Email ou nom d'utilisateur</Text>
                             <TextInput
-                                onChangeText={text => onChangeText(text)}
-                                value={value}
+                                onChangeText={text => setEmail(text)}
+                                value={email}
                                 style={styles.inputField}
                                 />
                         </View>
                         <View style={styles.field}>
                             <Text style={styles.fieldLabel}>mot de passe</Text>
                             <TextInput
-                                onChangeText={text => onChangeText(text)}
-                                value={value}
+                                onChangeText={text => setPassword(text)}
+                                value={password}
                                 style={styles.inputField}
                                 />
                             <TouchableOpacity>
@@ -38,7 +47,7 @@ export default function App(){
                             </TouchableOpacity>
                         </View>
                         <View style={styles.buttonField}>
-                            <TouchableOpacity style={styles.primaryButton}>
+                            <TouchableOpacity onPress={handleLogin} style={styles.primaryButton}>
                                 <Text style={styles.buttonText}>SE CONNECTER</Text>
                             </TouchableOpacity>
                         </View>
@@ -136,3 +145,13 @@ const styles = StyleSheet.create({
         margin: 'auto',
     },
 });
+
+const mapStateProps = state => {
+    return {}
+}
+
+const mapDispatchToProps = {
+    login: login
+}
+
+export default connect(mapStateProps, mapDispatchToProps)(Auth)
