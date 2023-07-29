@@ -6,12 +6,14 @@ import Stats from '../../../screens/Tabs/Stats';
 import Receipts from '../../../screens/Tabs/Receipts';
 import Students from '../../../screens/Tabs/Students';
 import Settings from '../../../screens/Tabs/Settings';
+import colors from '../../../styles/colors';
+import Vehicle from '../../../screens/Tabs/Vehicle';
 
 const Tab = createBottomTabNavigator();
 
 function CustomTab({ state, descriptors, navigation }) {
     return (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'red', borderTopStartRadius: 20, borderTopEndRadius: 20, padding: 8 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: colors.secondary, borderTopStartRadius: 20, borderTopEndRadius: 20, padding: 8 }}>
             {state.routes.map((route, index) => {
                 const { options } = descriptors[route.key];
                 const label =
@@ -74,6 +76,9 @@ export default function Tabs() {
                 //   tabBarActiveTintColor: colors.properWhite,
                 //   tabBarInactiveTintColor: colors.properWhite,
             })}
+            sceneContainerStyle={{
+                backgroundColor: colors.primary
+            }}
         >
             <Tab.Screen
                 name={"home"}
@@ -88,8 +93,8 @@ export default function Tabs() {
                 options={{ tabBarIcon: ({ focused, size, color }) => <Ionicons name={focused ? 'ios-bar-chart' : 'ios-bar-chart-outline'} size={size} color={color} /> }}
             />
             <Tab.Screen
-                name={"receipts"}
-                component={Receipts}
+                name={"vehicle"}
+                component={Vehicle}
                 // initialParams={{ role: route?.params?.role }}
                 options={{ tabBarIcon: ({ focused, size, color }) => <Ionicons name={focused ? 'key' : 'key-outline'} size={size} color={color} /> }}
             />

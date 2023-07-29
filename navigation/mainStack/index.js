@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AuthStack from './auth';
 import Tabs from './tabs';
 import { connect } from 'react-redux';
+import colors from '../../styles/colors';
 
 const Stack = createNativeStackNavigator();
 
@@ -12,7 +13,7 @@ function MainStack(props) {
         //     <Stack.Screen name="Auth" component={AuthStack} />
         //     <Stack.Screen name="Tabs" component={Tabs} />
         // </Stack.Navigator>
-        <Stack.Navigator screenOptions={{ headerShown: false }} {...props}>
+        <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.primary } }} {...props}>
         {authReducer?.data?.data?.accessToken ? (
           <Stack.Screen name='Tabs' component={Tabs} {...props} />
         ): (

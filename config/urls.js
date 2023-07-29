@@ -1,9 +1,11 @@
-export const baseUrl = process.env.NODE_ENV === 'development' ? "http://192.168.1.42:5001" : "/api";
+export const baseUrl = process.env.NODE_ENV === 'development' ? "http://192.168.1.3:5001" : "/api";
 
 export const dashboard=()=>`/dashboard/`
 export const student = (id='') => `/students/${id}`;
 export const vehicle = (id='') => `/vehicles/${id}`;
-export const login = () => `/auth/login`;
+export const login = () => `/auth/monitorLogin`;
+export const verify = (id) => `/auth/verify/${id}`;
+export const auth = (id) => `/auth/${id}`;
 export const drivingSchool = (id='') => `/drivingSchools/${id}`;
 export const users = (id='') => `/users/${id}`; 
 export const alerts=()=> `/alerts/`
@@ -14,3 +16,7 @@ export const receipts=()=> `/receipts/`
 export const permissions=()=> `/permissions/`
 export const roles=()=> `/roles/`
 export const typesVehicle=()=>`/vehicles/types`;
+export const planning = (id='')=> `/planning/${id}`
+export const repairs = (id='')=> `/repairs/${id}`
+export const reports = (id='')=> `/reports/${id}`
+export const penalties = (id='')=> `/penalties/${id}`

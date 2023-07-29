@@ -17,10 +17,6 @@ export default function App() {
       </PersistGate>
     </Provider>
   )
-  // return (
-  // <LoginScreen></LoginScreen>
-  // <EventScreen></EventScreen>
-  // );
 }
 
 const styles = StyleSheet.create({

@@ -1,20 +1,17 @@
-import { useNavigation } from "@react-navigation/native";
-import { StatusBar } from "expo-status-bar";
-import { Button, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { logout } from "../../../services/Auth/actions";
 import { connect } from "react-redux";
+import App from '../../Events'
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import StepedStudent from "../../StespWorked";
+const HomeStack = createNativeStackNavigator()
 
 function Home(props) {
-    const navigation = useNavigation();
+   
     return (
-        <SafeAreaView>
-            <StatusBar />
-            <Text>
-                Home screen
-            </Text>
-            <Button onPress={() => { props.logout() }} title="Logout" />
-        </SafeAreaView>
+        <HomeStack.Navigator screenOptions={{ headerShown: false }} {...props} >
+            <HomeStack.Screen name="Events" component={App} {...props} />
+            <HomeStack.Screen name="Levels" component={StepedStudent} {...props} />
+        </HomeStack.Navigator>
     )
 }
 
