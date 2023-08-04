@@ -58,6 +58,30 @@ export default function eventsReducer (state=initialState, action) {
                 updateEvent: {}
             }
         }
+        case actionTypes.UPDATE_LOCAL_EVENTS: {
+            return {
+                ...state,
+                loading: true,
+                error: '',
+                events: []
+            }
+        }
+        case actionTypes.UPDATE_LOCAL_EVENTS_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                error: '',
+                events: action.payload
+            }
+        }
+        case actionTypes.UPDATE_LOCAL_EVENTS_FAILED: {
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+                events: []
+            }
+        }
         case LOGOUT: {
             return initialState
         }

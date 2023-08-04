@@ -18,13 +18,13 @@ export const login = (email, password) => async (dispatch) => {
 
 
         let response = await api(urls.login(), 'post', postData)
+        console.log(response?.data)
 
         if(response?.data?.error){ return Promise.reject(dispatch({ type: actionTypes.LOGIN_FAILED, payload: response?.data })) }
 
         return Promise.resolve(dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response?.data }))
 
     }catch(error){
-        console.log(error)
         return Promise.reject(dispatch({ type: actionTypes.LOGIN_FAILED, payload: error?.response?.data?.message || error?.message }))
     }
 }
@@ -70,6 +70,34 @@ export const savePassword = (data) => async (dispatch) => {
     }catch(error){
         console.log(error)
         return Promise.reject(dispatch({ type: actionTypes.SAVE_PASSWORD_FAILED, payload: error?.response?.data?.message || error?.message }))
+    }
+}
+
+export const changePassword = (data) => async (dispatch) => {
+    try{
+        dispatch({ type: actionTypes.CHANGE_PASSWORD })
+        let response = await api(urls.auth('change/password'), 'post', data)
+        if(response?.data?.error){ return Promise.reject(dispatch({ type: actionTypes.CHANGE_PASSWORD_FAILED, payload: response?.data })) }
+        return Promise.resolve(dispatch({ type: actionTypes.CHANGE_PASSWORD_SUCCESS, payload: response?.data }))
+    }catch(error){
+        console.log(error)
+        return Promise.reject(dispatch({ type: actionTypes.CHANGE_PASSWORD_FAILED, payload: error?.response?.data?.message || error?.message }))
+    }
+}
+
+export const updateProfile = (data, id) => async (dispatch) => {
+    try{
+        dispatch({ type: actionTypes.UPDATE_PROFILE })
+        let response = await api(urls.users(id), 'put', data)
+        return Promise.resolve(
+            dispatch({
+                type: actionTypes.UPDATE_PROFILE_SUCCESS,
+                payload: response?.data?.data
+            })
+        )
+    }catch(error){
+        console.log(error)
+        return Promise.reject(dispatch({ type: actionTypes.UPDATE_PROFILE_FAILED, payload: error?.response?.data?.message || error?.message }))
     }
 }
 

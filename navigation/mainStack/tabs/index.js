@@ -8,8 +8,15 @@ import Students from '../../../screens/Tabs/Students';
 import Settings from '../../../screens/Tabs/Settings';
 import colors from '../../../styles/colors';
 import Vehicle from '../../../screens/Tabs/Vehicle';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import UpdateProfile from '../../../screens/Tabs/Settings/UpdateProfile';
+import ChangePassword from '../../../screens/Tabs/Settings/ChangePassword';
+import ExamReadyStudent from '../../../screens/Exams';
+import ExamHours from '../../../screens/Exams/hours';
 
 const Tab = createBottomTabNavigator();
+const SettingsStack = createNativeStackNavigator();
+const StudentsStack = createNativeStackNavigator();
 
 function CustomTab({ state, descriptors, navigation }) {
     return (
@@ -67,6 +74,26 @@ function CustomTab({ state, descriptors, navigation }) {
     );
 }
 
+function SettingScreen(props) {
+    return (
+        <SettingsStack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.primary } }} >
+            <SettingsStack.Screen name='profile' {...props} component={Settings} />
+            <SettingsStack.Screen name='updateProfile' {...props} component={UpdateProfile} />
+            <SettingsStack.Screen name='changePassword' {...props} component={ChangePassword} />
+        </SettingsStack.Navigator>
+    )
+}
+
+function StudentsScreen(props) {
+    return (
+        <StudentsStack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.primary } }} >
+            <StudentsStack.Screen name='studentsList' {...props} component={Students} />
+            <StudentsStack.Screen name='examReadyStudent' {...props} component={ExamReadyStudent} />
+            <StudentsStack.Screen name='addExam' {...props} component={ExamHours} />
+        </StudentsStack.Navigator>
+    )
+}
+
 export default function Tabs() {
     return (
         <Tab.Navigator
@@ -100,14 +127,14 @@ export default function Tabs() {
             />
             <Tab.Screen
                 name={"students"}
-                component={Students}
+                component={StudentsScreen}
                 // initialParams={{ role: route?.params?.role }}
                 options={{ tabBarIcon: ({ focused, size, color }) => <Ionicons name={focused ? 'people' : 'people-outline'} size={size} color={color} /> }}
             />
             <Tab.Screen
                 name={"settings"}
-                component={Settings}
-                // initialParams={{ role: route?.params?.role }}
+                component={SettingScreen}
+                // initialParams={{ role: route?.params?.role }}y_rouabeh
                 options={{ tabBarIcon: ({ focused, size, color }) => <Ionicons name={focused ? 'settings' : 'settings-outline'} size={size} color={color} /> }}
             />
         </Tab.Navigator>
