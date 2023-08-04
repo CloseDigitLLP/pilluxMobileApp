@@ -211,12 +211,26 @@ function ForgetPassword({ props, setCurrentFlow, currentFlow }) {
 
 function Login({ props, currentFlow, setCurrentFlow }) {
 
-  const handleLogin = () => {
-    props.login(email, password);
+  const handleLogin = async () => {
+    try{
+      setLoading(true)
+      let { payload } = await props.login(email, password);
+      if(payload?.data?.id){
+        ToastAndroid.show("Connexion réussie", ToastAndroid.SHORT)
+      }else{
+        ToastAndroid.show("les informations d'identification invalides", ToastAndroid.SHORT)
+      }
+    }catch(error){
+      console.log(error)
+      ToastAndroid.show("les informations d'identification invalides!", ToastAndroid.SHORT)
+    }finally{
+      setLoading(false)
+    }
   };
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
   return (
     <View style={styles.loginForm}>
@@ -226,6 +240,7 @@ function Login({ props, currentFlow, setCurrentFlow }) {
           onChangeText={(text) => setEmail(text)}
           value={email}
           style={styles.inputField}
+          editable={!loading}
         />
       </View>
       <View style={styles.field}>
@@ -234,6 +249,8 @@ function Login({ props, currentFlow, setCurrentFlow }) {
           onChangeText={(text) => setPassword(text)}
           value={password}
           style={styles.inputField}
+          secureTextEntry={true}
+          editable={!loading}
         />
         <TouchableOpacity onPress={() => setCurrentFlow(2)}>
           <Text style={styles.forgotText}>Mot de passe oublié?</Text>
@@ -241,7 +258,12 @@ function Login({ props, currentFlow, setCurrentFlow }) {
       </View>
       <View style={styles.buttonField}>
         <TouchableOpacity onPress={handleLogin} style={styles.primaryButton}>
+        {
+          loading ? 
+          <ActivityIndicator />
+          :
           <Text style={styles.buttonText}>SE CONNECTER</Text>
+        }
         </TouchableOpacity>
       </View>
     </View>
@@ -391,7 +413,7 @@ const mapStateProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  login: login,
+  login,
   verifyEmail,
   verifyOtp,
   savePassword

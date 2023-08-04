@@ -2,8 +2,8 @@ import { LOGOUT } from '../Auth/actionTypes'
 import * as actionTypes from './actionTypes'
 
 const initialState = {
-    events: [],
-    updateStudent: {},
+    students: [],
+    updateStudent: [],
     loading: false,
     error: ''
 }
@@ -15,7 +15,7 @@ export default function studentsReducer (state=initialState, action) {
                 ...state,
                 loading: true,
                 error: '',
-                updateStudent: {}
+                updateStudent: []
             }
         }
         case actionTypes.UPDATE_STUDENT_SUCCESS: {
@@ -31,7 +31,31 @@ export default function studentsReducer (state=initialState, action) {
                 ...state,
                 loading: false,
                 error: action.payload,
-                updateStudent: {}
+                updateStudent: []
+            }
+        }
+        case actionTypes.GET_STUDENTS: {
+            return {
+                ...state,
+                loading: true,
+                error: '',
+                students: []
+            }
+        }
+        case actionTypes.GET_STUDENTS_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                error: '',
+                students: action.payload
+            }
+        }
+        case actionTypes.GET_STUDENTS_FAILED: {
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+                students: []
             }
         }
         case LOGOUT: {

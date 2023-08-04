@@ -694,12 +694,7 @@ function Vehicle({
 
   useEffect(() => {
     if (selectedVehicle?.id) {
-      let savedVehicle = savedVehiclesData?.find(
-        (vehicle) => vehicle?.id === selectedVehicle?.id
-      );
-      if (!savedVehicle) {
         fetchVehicleData(selectedVehicle?.id);
-      }
     }
   }, [selectedVehicle]);
 
@@ -738,6 +733,8 @@ function Vehicle({
                 <Text style={styles.labelText}>Select vehicle</Text>
                 <SelectDropdown
                   data={vehicles}
+                  disabled={!vehicles?.length}
+                  defaultButtonText={!vehicles?.length ? "No Vehicle found!" : "Select an option."}
                   onSelect={(item) => {
                     setSelectedVehicle(item);
                   }}

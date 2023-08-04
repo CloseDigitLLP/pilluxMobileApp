@@ -16,21 +16,22 @@ import { connect } from "react-redux";
 import { getAllEvents, updateEvent } from "../../services/Events/actions";
 import moment from "moment/moment";
 import { useNavigation } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
 
-function ButtonCard({ eventData, updateEvent, getAllEvents }) {
+function ButtonCard({ eventData, updateEvent, getAllEvents, events }) {
   const [showOption, setShowOption] = useState(null);
   const [selectedMotif, setSelectedMotif] = useState("");
-  const [comment, setComment] = useState("")
-  const [loadingEvent, setLoadingEvent] = useState(false)
+  const [comment, setComment] = useState("");
+  const [loadingEvent, setLoadingEvent] = useState(false);
 
   const navigation = useNavigation();
 
   const handlePressOk = () => {
-    if(showOption === "present"){
+    if (showOption === "present") {
       // navigation.navigate("Levels", { ...eventData });
-      handleStatusUpdate(showOption)
-    }else if(showOption === "absent"){
-      handleStatusUpdate(showOption)
+      handleStatusUpdate(showOption);
+    } else if (showOption === "absent") {
+      handleStatusUpdate(showOption);
     }
   };
 
@@ -39,63 +40,75 @@ function ButtonCard({ eventData, updateEvent, getAllEvents }) {
   };
 
   const handleStatusUpdate = async (status) => {
-    try{
-      if(!selectedMotif && (status === 'absent')){ return ToastAndroid.show("Please select motif!", ToastAndroid.SHORT) }
-      setLoadingEvent(true)
+    try {
+      if (!selectedMotif && status === "absent") {
+        return ToastAndroid.show("Please select motif!", ToastAndroid.SHORT);
+      }
+      setLoadingEvent(true);
       let payload = {
         status: status,
-        comment: comment
+        comment: comment,
+      };
+      if (status === "absent") {
+        payload["motif"] = selectedMotif;
       }
-      if(status === 'absent'){
-        payload['motif'] = selectedMotif
-      }
-      await updateEvent(payload, eventData?.id)
-      await getAllEvents()
-      resetStates()
-      if(status === 'present'){
+      await updateEvent(payload, eventData?.id);
+      // await getAllEvents();
+      let eventIndex = events?.findIndex((item) => item?.id === eventData?.id)
+      if(eventIndex){ events[eventIndex] = {
+        ...events[eventIndex],
+        status,
+        comment
+      } }
+
+      resetStates();
+      if (status === "present") {
         navigation.navigate("Levels", { ...eventData });
       }
-    }catch(error){
-      console.error(error)
-      ToastAndroid.show("Error happened while updating event!", ToastAndroid.SHORT)
-    }finally{
-      setLoadingEvent(false)
-    } 
-  }
+    } catch (error) {
+      console.error(error);
+      ToastAndroid.show(
+        "Error happened while updating event!",
+        ToastAndroid.SHORT
+      );
+    } finally {
+      setLoadingEvent(false);
+    }
+  };
 
   const resetStates = () => {
-    setShowOption(null)
-    setComment("")
-    setSelectedMotif("")
-  }
+    setShowOption(null);
+    setComment("");
+    setSelectedMotif("");
+  };
 
-  if(loadingEvent) return (
-    <>
-      <ActivityIndicator />
-    </>
-  )
+  if (loadingEvent)
+    return (
+      <>
+        <ActivityIndicator />
+      </>
+    );
 
   return (
     <>
-    {
-      eventData?.status !== "pending" ?
-      <></>
-      :
-      <View style={styles.cardBtn}>
-        <TouchableOpacity
-          style={styles.cardOutlineBtn}
-          onPress={() => setShowOption("present")}
-        >
-          <Text style={styles.cardBtnText}>Present</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.cardFillBtn}
-          onPress={() => setShowOption("absent")}
-        >
-          <Text style={styles.cardBtnText}>Absent</Text>
-        </TouchableOpacity>
-      </View>
-    }
+      {eventData?.status !== "pending" ? (
+        <></>
+      ) : (
+        <View style={styles.cardBtn}>
+          <TouchableOpacity
+            style={styles.cardOutlineBtn}
+            onPress={() => setShowOption("present")}
+          >
+            <Text style={styles.cardBtnText}>Present</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.cardFillBtn}
+            onPress={() => setShowOption("absent")}
+          >
+            <Text style={styles.cardBtnText}>Absent</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       {showOption && (
         <View style={styles.openableCard}>
           {showOption === "absent" && (
@@ -138,8 +151,12 @@ function ButtonCard({ eventData, updateEvent, getAllEvents }) {
 
           <Text style={styles.openCardHeading}>commentaire</Text>
           <View style={styles.whiteCard}>
-            <TextInput value={comment} onChangeText={setComment} multiline style={styles.whiteCardContent}>
-            </TextInput>
+            <TextInput
+              value={comment}
+              onChangeText={setComment}
+              multiline
+              style={styles.whiteCardContent}
+            ></TextInput>
           </View>
           <View style={styles.cardBtn}>
             <TouchableOpacity
@@ -163,90 +180,170 @@ function ButtonCard({ eventData, updateEvent, getAllEvents }) {
 
 function App({ events, getAllEvents, updateEvent, loading }) {
   const [pastEvents, setPastEvents] = useState([]);
+  const [pastEventsLite, setPastEventsLite] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [upcomingEventsLite, setUpcomingEventsLite] = useState([]);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
-    getAllEvents();
+    setLoader(true);
+    if(!events?.length){
+      getAllEvents()
+        .then()
+        .catch()
+        .finally(() => setLoader(false));
+    }
   }, []);
 
   useEffect(() => {
     if (events?.length) {
+      setLoader(true);
       let pastEventsData = [];
       let upcomingEventsData = [];
 
       events?.map((event) => {
-        if (
-          moment(event?.start_horary, "YYYY-MM-DD HH:mm:ss").isAfter(moment())
-        ) {
+        if (moment(event?.start_horary, "YYYY-MM-DD HH:mm:ss").isAfter(moment())) {
           upcomingEventsData.push(event);
         } else {
           pastEventsData.push(event);
         }
       });
 
+      pastEventsData.sort((a, b) => {
+        const timeA = moment(a.start_horary, "YYYY-MM-DD HH:mm:ss");
+        const timeB = moment(b.start_horary, "YYYY-MM-DD HH:mm:ss");
+
+        if (timeA.isBefore(timeB)) {
+          return 1;
+        } else if (timeA.isAfter(timeB)) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+
+      upcomingEventsData.sort((a, b) => {
+        const timeA = moment(a.start_horary, "YYYY-MM-DD HH:mm:ss");
+        const timeB = moment(b.start_horary, "YYYY-MM-DD HH:mm:ss");
+
+        if (timeA.isBefore(timeB)) {
+          return -1; // Return -1 for ascending order (oldest to latest)
+        } else if (timeA.isAfter(timeB)) {
+          return 1; // Return 1 for descending order (latest to oldest)
+        } else {
+          return 0;
+        }
+      });
+
       setPastEvents(pastEventsData);
       setUpcomingEvents(upcomingEventsData);
+      setLoader(false);
     }
   }, [events]);
 
+  useEffect(() => {
+    if(upcomingEvents?.length){
+      setUpcomingEventsLite(upcomingEvents?.slice(0, 10))
+    }else{
+      setUpcomingEventsLite([])
+    }
+  }, [upcomingEvents])
+
+  useEffect(() => {
+    if(pastEvents?.length){
+      setPastEventsLite(pastEvents?.slice(0, 10))
+    }else{
+      setPastEventsLite([])
+    }
+  }, [pastEvents])
+
   return (
     <SafeAreaView>
+      <StatusBar backgroundColor={colors.primary} />
       <View style={common.container}>
         <View style={common.headerPart}>
           <Text style={common.headerText}>Événements à venir</Text>
         </View>
         <ScrollView style={common.mainContent}>
           <View style={styles.cardPart}>
-            {upcomingEvents?.map((eventData, index) => {
-              return (
-                <View style={styles.cardBox} key={index}>
-                  <View style={common.cardTextPart}>
-                    <View style={common.leftText}>
-                      <Text style={common.contentText}>
-                        {eventData?.studentGenerals?.firstname}{" "}
-                        {eventData?.studentGenerals?.lastname} |{" "}
-                        {eventData?.studentGenerals?.mobile}
-                      </Text>
-                      <Text style={common.contentText}>Boîte : manuelle</Text>
-                      <Text style={common.contentText}>
-                        Type : {eventData?.type}
-                      </Text>
+            {loader ? (
+              <ActivityIndicator />
+            ) : (
+              <>
+                {upcomingEventsLite?.map((eventData, index) => {
+                  return (
+                    <View style={styles.cardBox} key={index}>
+                      <View style={common.cardTextPart}>
+                        <View style={common.leftText}>
+                          <Text style={common.contentText}>
+                            {eventData?.studentGenerals?.firstname}{" "}
+                            {eventData?.studentGenerals?.lastname} |{" "}
+                            {eventData?.studentGenerals?.mobile}
+                          </Text>
+                          <Text style={common.contentText}>
+                            Boîte : manuelle
+                          </Text>
+                          <Text style={common.contentText}>
+                            Type : {eventData?.type}
+                          </Text>
+                        </View>
+                        <View style={common.rightText}>
+                          <Text
+                            style={{
+                              ...common.contentText,
+                              ...common.contentTextRight,
+                            }}
+                          >
+                            {moment(eventData?.start_horary).format(
+                              "DD/MM/YYYY"
+                            )}
+                          </Text>
+                          <Text
+                            style={{
+                              ...common.contentText,
+                              ...common.contentTextRight,
+                            }}
+                          >
+                            {moment(eventData?.start_horary).format("HH[h]mm")}
+                          </Text>
+                          <Text
+                            style={{
+                              ...common.contentText,
+                              ...common.contentTextRight,
+                            }}
+                          >
+                            {moment(eventData?.end_horary).diff(
+                              moment(eventData?.start_horary),
+                              "hours"
+                            )}
+                            h
+                          </Text>
+                        </View>
+                      </View>
+                      <ButtonCard
+                        loading={loading}
+                        eventData={eventData}
+                        updateEvent={updateEvent}
+                        getAllEvents={getAllEvents}
+                        events={events}
+                      />
                     </View>
-                    <View style={common.rightText}>
-                      <Text
-                        style={{
-                          ...common.contentText,
-                          ...common.contentTextRight,
-                        }}
-                      >
-                        {moment(eventData?.start_horary).format("DD/MM/YYYY")}
-                      </Text>
-                      <Text
-                        style={{
-                          ...common.contentText,
-                          ...common.contentTextRight,
-                        }}
-                      >
-                        {moment(eventData?.start_horary).format("HH[h]mm")}
-                      </Text>
-                      <Text
-                        style={{
-                          ...common.contentText,
-                          ...common.contentTextRight,
-                        }}
-                      >
-                        {moment(eventData?.end_horary).diff(
-                          moment(eventData?.start_horary),
-                          "hours"
-                        )}
-                        h
-                      </Text>
-                    </View>
-                  </View>
-                  <ButtonCard loading={loading} eventData={eventData} updateEvent={updateEvent} getAllEvents={getAllEvents} />
-                </View>
-              );
-            })}
+                  );
+                })}
+                {upcomingEventsLite?.length < 1 && (
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: "white",
+                      marginTop: 20,
+                      fontSize: 16,
+                    }}
+                  >
+                    No records found!
+                  </Text>
+                )}
+              </>
+            )}
           </View>
         </ScrollView>
         <View style={common.headerPart}>
@@ -254,60 +351,86 @@ function App({ events, getAllEvents, updateEvent, loading }) {
         </View>
         <ScrollView style={common.mainContent}>
           <View style={styles.cardPart}>
-            {pastEvents?.map((eventData, index) => {
-              return (
-                <View
-                  key={index}
-                  style={{ ...styles.cardBox, ...styles.cardBoxGray }}
-                >
-                  <View style={common.cardTextPart}>
-                    <View style={common.leftText}>
-                      <Text style={common.contentText}>
-                        {eventData?.studentGenerals?.firstname}{" "}
-                        {eventData?.studentGenerals?.lastname} |{" "}
-                        {eventData?.studentGenerals?.mobile}
-                      </Text>
-                      <Text style={common.contentText}>Boîte : manuelle</Text>
-                      <Text style={common.contentText}>
-                        Type : {eventData?.type}
-                      </Text>
+            {loader ? (
+              <ActivityIndicator />
+            ) : (
+              <>
+                {pastEventsLite?.map((eventData, index) => {
+                  return (
+                    <View
+                      key={index}
+                      style={{ ...styles.cardBox, ...styles.cardBoxGray }}
+                    >
+                      <View style={common.cardTextPart}>
+                        <View style={common.leftText}>
+                          <Text style={common.contentText}>
+                            {eventData?.studentGenerals?.firstname}{" "}
+                            {eventData?.studentGenerals?.lastname} |{" "}
+                            {eventData?.studentGenerals?.mobile}
+                          </Text>
+                          <Text style={common.contentText}>
+                            Boîte : manuelle
+                          </Text>
+                          <Text style={common.contentText}>
+                            Type : {eventData?.type}
+                          </Text>
+                        </View>
+                        <View style={common.rightText}>
+                          <Text
+                            style={{
+                              ...common.contentText,
+                              ...common.contentTextRight,
+                            }}
+                          >
+                            {moment(eventData?.start_horary).format(
+                              "DD/MM/YYYY"
+                            )}
+                          </Text>
+                          <Text
+                            style={{
+                              ...common.contentText,
+                              ...common.contentTextRight,
+                            }}
+                          >
+                            {moment(eventData?.start_horary).format("HH[h]mm")}
+                          </Text>
+                          <Text
+                            style={{
+                              ...common.contentText,
+                              ...common.contentTextRight,
+                            }}
+                          >
+                            {moment(eventData?.end_horary).diff(
+                              moment(eventData?.start_horary),
+                              "hours"
+                            )}
+                            h
+                          </Text>
+                        </View>
+                      </View>
+                      <ButtonCard
+                        loading={loading}
+                        eventData={eventData}
+                        updateEvent={updateEvent}
+                        getAllEvents={getAllEvents}
+                      />
                     </View>
-                    <View style={common.rightText}>
-                      <Text
-                        style={{
-                          ...common.contentText,
-                          ...common.contentTextRight,
-                        }}
-                      >
-                        {moment(eventData?.start_horary).format("DD/MM/YYYY")}
-                      </Text>
-                      <Text
-                        style={{
-                          ...common.contentText,
-                          ...common.contentTextRight,
-                        }}
-                      >
-                        {moment(eventData?.start_horary).format("HH[h]mm")}
-                      </Text>
-                      <Text
-                        style={{
-                          ...common.contentText,
-                          ...common.contentTextRight,
-                        }}
-                      >
-                        {moment(eventData?.end_horary).diff(
-                          moment(eventData?.start_horary),
-                          "hours"
-                        )}
-                        h
-                      </Text>
-                    </View>
-                  </View>
-                  <ButtonCard loading={loading} eventData={eventData} updateEvent={updateEvent} getAllEvents={getAllEvents} />
-                </View>
-              );
-            })}
-            
+                  );
+                })}
+                {pastEventsLite?.length < 1 && (
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: "white",
+                      marginTop: 20,
+                      fontSize: 16,
+                    }}
+                  >
+                    No records found!
+                  </Text>
+                )}
+              </>
+            )}
           </View>
         </ScrollView>
       </View>
@@ -347,7 +470,7 @@ const styles = StyleSheet.create({
   },
   whiteCardContent: {
     fontSize: 12,
-    lineHeight: 22
+    lineHeight: 22,
   },
   cardBtn: {
     display: "flex",
@@ -382,13 +505,13 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
   return {
     events: state?.eventsReducer?.events,
-    loading: state?.eventsReducer?.loading
+    loading: state?.eventsReducer?.loading,
   };
 };
 
 const mapDispatchToProps = {
   getAllEvents,
-  updateEvent
+  updateEvent,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

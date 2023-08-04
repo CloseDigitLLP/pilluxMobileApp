@@ -11,13 +11,14 @@ import {
 import colors from "../../styles/colors";
 import { connect } from "react-redux";
 import { updateStudentSkill } from "../../services/Students/actions";
-import { getAllEvents } from "../../services/Events/actions";
+import { getAllEvents, updateLocalEvents } from "../../services/Events/actions";
 
-const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, getAllEvents }) => {
+const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, getAllEvents, events, updateLocalEvents }) => {
 
     // Abordé => 1
     // Traité => 2
     // Assimilé => 3
+    // console.log(JSON.stringify(events[0], 2, 2))
 
   const [switchState, setSwitchState] = useState(1);
   const [updateStateLoading, setUpdateStateLoading] = useState(false)
@@ -43,18 +44,33 @@ const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, ge
 
       if(switchState === 3){ return; }
 
-      let payload = {
+      let payloadData = {
         student_id: studentId,
         skill_id: skillData?.id,
         status: switchState === 1 ? "Traité" : "Assimilé" 
       }
-      console.log(skillData)
-      skillData?.student_skill_id && (payload['id'] = skillData?.student_skill_id)
+      skillData?.student_skill_id && (payloadData['id'] = skillData?.student_skill_id)
 
       setUpdateStateLoading(true)
-      console.log(payload)
-      await updateStudentSkill([payload])
-      await getAllEvents()
+      let { payload } = await updateStudentSkill([payloadData])
+      // await getAllEvents()
+
+      updateLocalEvents(events.map((event) => {
+        if(event?.student_id === payload[0]?.student_id ){
+          return {
+            ...event,
+            studentGenerals: {
+              ...event['studentGenerals'],
+              studentSkills: [
+                ...event['studentGenerals']['studentSkills'],
+                payload[0]
+            ]
+            }
+          }
+        }else{
+          return event
+        }
+      }))
 
       setSwitchState(switchState + 1)
 
@@ -103,13 +119,14 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-
+      events: state?.eventsReducer?.events
     }
 }
 
 const mapDispatchToProps = {
     updateStudentSkill: updateStudentSkill,
-    getAllEvents: getAllEvents
+    getAllEvents: getAllEvents,
+    updateLocalEvents: updateLocalEvents
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ThreeStateSwitch);
