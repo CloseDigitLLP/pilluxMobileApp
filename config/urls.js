@@ -1,4 +1,4 @@
-export const baseUrl = process.env.NODE_ENV === 'development' ? "http://192.168.1.9:5001" : "/api";
+export const baseUrl = process.env.NODE_ENV === 'development' ? "http://192.168.1.9:5001" : "https://phpstack-1019741-3603266.cloudwaysapps.com/api/";
 
 export const dashboard=()=>`/dashboard/`
 export const student = (id='') => `/students/${id}`;

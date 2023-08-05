@@ -13,10 +13,13 @@ import UpdateProfile from '../../../screens/Tabs/Settings/UpdateProfile';
 import ChangePassword from '../../../screens/Tabs/Settings/ChangePassword';
 import ExamReadyStudent from '../../../screens/Exams';
 import ExamHours from '../../../screens/Exams/hours';
+import Events from '../../../screens/Events';
+import StespWorked from '../../../screens/StespWorked';
 
 const Tab = createBottomTabNavigator();
 const SettingsStack = createNativeStackNavigator();
 const StudentsStack = createNativeStackNavigator();
+const HomeStack = createNativeStackNavigator()
 
 function CustomTab({ state, descriptors, navigation }) {
     return (
@@ -94,6 +97,16 @@ function StudentsScreen(props) {
     )
 }
 
+function HomeScreen(props) {
+   
+    return (
+        <HomeStack.Navigator screenOptions={{ headerShown: false }} {...props} >
+            <HomeStack.Screen name="Events" component={Events} {...props} />
+            <HomeStack.Screen name="Levels" component={StespWorked} {...props} />
+        </HomeStack.Navigator>
+    )
+}
+
 export default function Tabs() {
     return (
         <Tab.Navigator
@@ -109,7 +122,7 @@ export default function Tabs() {
         >
             <Tab.Screen
                 name={"home"}
-                component={Home}
+                component={HomeScreen}
                 // initialParams={{ role: route?.params?.role }}
                 options={{ tabBarIcon: ({ focused, size, color }) => <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} /> }}
             />

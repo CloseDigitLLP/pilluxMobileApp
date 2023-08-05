@@ -7,7 +7,6 @@ export const updateStudentSkill = (data, id) => async (dispatch) => {
     try{
         dispatch({ type: actionTypes.UPDATE_STUDENT })
         let response = await api(student('skills'), 'post', data)
-        console.log(response?.data, "UPDATED DDDDDDDDDDD")
         return Promise.resolve(
             dispatch({
                 type: actionTypes.UPDATE_STUDENT_SUCCESS,
@@ -23,7 +22,7 @@ export const updateStudentSkill = (data, id) => async (dispatch) => {
 export const getAllStudents = () => async (dispatch) => {
     try{
         dispatch({ type: actionTypes.GET_STUDENTS })
-        let response = await api(student(), 'get')
+        let response = await api(student("list"), 'get')
         return Promise.resolve(
             dispatch({
                 type: actionTypes.GET_STUDENTS_SUCCESS,

@@ -8,6 +8,7 @@ import {
   TextInput,
   ToastAndroid,
   ActivityIndicator,
+  FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "../../styles/colors";
@@ -42,7 +43,11 @@ function ButtonCard({ eventData, updateEvent, getAllEvents, events }) {
   const handleStatusUpdate = async (status) => {
     try {
       if (!selectedMotif && status === "absent") {
-        return ToastAndroid.show("Please select motif!", ToastAndroid.SHORT);
+        return Toast.show({
+          type: "error",
+          text1: "Please select motif !"
+        })
+        // return ToastAndroid.show("Please select motif!", ToastAndroid.SHORT);
       }
       setLoadingEvent(true);
       let payload = {
@@ -67,10 +72,14 @@ function ButtonCard({ eventData, updateEvent, getAllEvents, events }) {
       }
     } catch (error) {
       console.error(error);
-      ToastAndroid.show(
-        "Error happened while updating event!",
-        ToastAndroid.SHORT
-      );
+      Toast.show({
+        type: "error",
+        text1: "Error happened while updating event !"
+      })
+      // ToastAndroid.show(
+      //   "Error happened while updating event!",
+      //   ToastAndroid.SHORT
+      // );
     } finally {
       setLoadingEvent(false);
     }
@@ -241,36 +250,100 @@ function App({ events, getAllEvents, updateEvent, loading }) {
     }
   }, [events]);
 
-  useEffect(() => {
-    if(upcomingEvents?.length){
-      setUpcomingEventsLite(upcomingEvents?.slice(0, 10))
-    }else{
-      setUpcomingEventsLite([])
-    }
-  }, [upcomingEvents])
+  // useEffect(() => {
+  //   if(upcomingEvents?.length){
+  //     setUpcomingEventsLite(upcomingEvents?.slice(0, 10))
+  //   }else{
+  //     setUpcomingEventsLite([])
+  //   }
+  // }, [upcomingEvents])
 
-  useEffect(() => {
-    if(pastEvents?.length){
-      setPastEventsLite(pastEvents?.slice(0, 10))
-    }else{
-      setPastEventsLite([])
-    }
-  }, [pastEvents])
+  // useEffect(() => {
+  //   if(pastEvents?.length){
+  //     setPastEventsLite(pastEvents?.slice(0, 10))
+  //   }else{
+  //     setPastEventsLite([])
+  //   }
+  // }, [pastEvents])
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ backgroundColor: colors.primary }} >
       <StatusBar backgroundColor={colors.primary} />
       <View style={common.container}>
         <View style={common.headerPart}>
           <Text style={common.headerText}>Événements à venir</Text>
         </View>
-        <ScrollView style={common.mainContent}>
+        <View style={{...common.mainContent, maxHeight: "40%" }}>
           <View style={styles.cardPart}>
             {loader ? (
               <ActivityIndicator />
             ) : (
               <>
-                {upcomingEventsLite?.map((eventData, index) => {
+              <FlatList 
+                data={upcomingEvents}
+                renderItem={( {item:eventData, index} ) => {
+                  return (
+                    <View style={styles.cardBox} key={index} >
+                      <View style={common.cardTextPart}>
+                        <View style={common.leftText}>
+                          <Text style={common.contentText}>
+                            {eventData?.studentGenerals?.firstname}{" "}
+                            {eventData?.studentGenerals?.lastname} |{" "}
+                            {eventData?.studentGenerals?.mobile}
+                          </Text>
+                          <Text style={common.contentText}>
+                            Boîte : manuelle
+                          </Text>
+                          <Text style={common.contentText}>
+                            Type : {eventData?.type}
+                          </Text>
+                        </View>
+                        <View style={common.rightText}>
+                          <Text
+                            style={{
+                              ...common.contentText,
+                              ...common.contentTextRight,
+                            }}
+                          >
+                            {moment(eventData?.start_horary).format(
+                              "DD/MM/YYYY"
+                            )}
+                          </Text>
+                          <Text
+                            style={{
+                              ...common.contentText,
+                              ...common.contentTextRight,
+                            }}
+                          >
+                            {moment(eventData?.start_horary).format("HH[h]mm")}
+                          </Text>
+                          <Text
+                            style={{
+                              ...common.contentText,
+                              ...common.contentTextRight,
+                            }}
+                          >
+                            {moment(eventData?.end_horary).diff(
+                              moment(eventData?.start_horary),
+                              "hours"
+                            )}
+                            h
+                          </Text>
+                        </View>
+                      </View>
+                      <ButtonCard
+                        loading={loading}
+                        eventData={eventData}
+                        updateEvent={updateEvent}
+                        getAllEvents={getAllEvents}
+                        events={events}
+                      />
+                    </View>
+                  );
+                }}
+                keyExtractor={(eventData) => eventData?.id}
+              />
+                {/* {upcomingEventsLite?.map((eventData, index) => {
                   return (
                     <View style={styles.cardBox} key={index}>
                       <View style={common.cardTextPart}>
@@ -329,7 +402,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                       />
                     </View>
                   );
-                })}
+                })} */}
                 {upcomingEventsLite?.length < 1 && (
                   <Text
                     style={{
@@ -345,16 +418,82 @@ function App({ events, getAllEvents, updateEvent, loading }) {
               </>
             )}
           </View>
-        </ScrollView>
+        </View>
         <View style={common.headerPart}>
           <Text style={common.headerText}>événements passés à confirmer</Text>
         </View>
-        <ScrollView style={common.mainContent}>
+        <View style={{...common.mainContent }}>
           <View style={styles.cardPart}>
             {loader ? (
               <ActivityIndicator />
             ) : (
               <>
+              <FlatList 
+                data={pastEvents}
+                renderItem={( {item:eventData, index} ) => {
+                  return (
+                    <View
+                      key={index}
+                      style={{ ...styles.cardBox, ...styles.cardBoxGray }}
+                    >
+                      <View style={common.cardTextPart}>
+                        <View style={common.leftText}>
+                          <Text style={common.contentText}>
+                            {eventData?.studentGenerals?.firstname}{" "}
+                            {eventData?.studentGenerals?.lastname} |{" "}
+                            {eventData?.studentGenerals?.mobile}
+                          </Text>
+                          <Text style={common.contentText}>
+                            Boîte : manuelle
+                          </Text>
+                          <Text style={common.contentText}>
+                            Type : {eventData?.type}
+                          </Text>
+                        </View>
+                        <View style={common.rightText}>
+                          <Text
+                            style={{
+                              ...common.contentText,
+                              ...common.contentTextRight,
+                            }}
+                          >
+                            {moment(eventData?.start_horary).format(
+                              "DD/MM/YYYY"
+                            )}
+                          </Text>
+                          <Text
+                            style={{
+                              ...common.contentText,
+                              ...common.contentTextRight,
+                            }}
+                          >
+                            {moment(eventData?.start_horary).format("HH[h]mm")}
+                          </Text>
+                          <Text
+                            style={{
+                              ...common.contentText,
+                              ...common.contentTextRight,
+                            }}
+                          >
+                            {moment(eventData?.end_horary).diff(
+                              moment(eventData?.start_horary),
+                              "hours"
+                            )}
+                            h
+                          </Text>
+                        </View>
+                      </View>
+                      <ButtonCard
+                        loading={loading}
+                        eventData={eventData}
+                        updateEvent={updateEvent}
+                        getAllEvents={getAllEvents}
+                      />
+                    </View>
+                  );
+                }}
+                keyExtractor={(eventData) => eventData?.id}
+              />
                 {pastEventsLite?.map((eventData, index) => {
                   return (
                     <View
@@ -432,7 +571,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
               </>
             )}
           </View>
-        </ScrollView>
+        </View>
       </View>
     </SafeAreaView>
   );
