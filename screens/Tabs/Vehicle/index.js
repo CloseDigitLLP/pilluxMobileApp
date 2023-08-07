@@ -14,7 +14,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import common from "../../../styles/common";
 import SelectDropdown from "react-native-select-dropdown";
-import CarImage from "../../../assets/images/car.jpeg";
 import { connect, useSelector } from "react-redux";
 import { logout } from "../../../services/Auth/actions";
 import { useCallback, useEffect, useState } from "react";
