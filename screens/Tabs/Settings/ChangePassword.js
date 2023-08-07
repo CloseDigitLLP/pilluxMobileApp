@@ -18,12 +18,15 @@ import common from "../../../styles/common";
 import { changePassword } from "../../../services/Auth/actions";
 import { connect } from "react-redux";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { Entypo } from "react-native-vector-icons";
 
 const ChangePassword = ({ changePassword }) => {
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false)
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
 
   const handleUpdate = async () => {
     try {
@@ -87,7 +90,7 @@ const ChangePassword = ({ changePassword }) => {
         // ToastAndroid.show("mauvais mot de passe saisi", ToastAndroid.SHORT)
       }else{
         Toast.show({
-          type: "Success",
+          type: "success",
           text1: "Le mot de passe a été changé avec succès"
         })
         // ToastAndroid.show("Le mot de passe a été changé avec succès", ToastAndroid.SHORT)
@@ -139,21 +142,41 @@ const ChangePassword = ({ changePassword }) => {
             <View style={styles.bodyCard}>
               <View>
                 <Text style={styles.labelText}> Mon mot de passe actuel </Text>
-                <TextInput
-                  editable={!loading}
-                  value={password}
-                  onChangeText={setPassword}
-                  style={styles.textInput}
-                />
+                <View style={{ position: "relative" }} >
+                  <TextInput
+                    editable={!loading}
+                    value={password}
+                    onChangeText={setPassword}
+                    style={styles.textInput}
+                    secureTextEntry={!showCurrentPassword}
+                  />
+                  <TouchableOpacity onPress={() => setShowCurrentPassword(!showCurrentPassword)} style={{ position: 'absolute', right: 25, top: 15 }} >
+                    <Entypo
+                      name={showCurrentPassword ? 'eye' : 'eye-with-line'}
+                      size={18}
+                      color='white'
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
               <View>
                 <Text style={styles.labelText}> Mon nouveau mot de passe </Text>
-                <TextInput
-                  editable={!loading}
-                  value={newPassword}
-                  onChangeText={setNewPassword}
-                  style={styles.textInput}
-                />
+                <View style={{ position: 'relative' }} >
+                  <TextInput
+                    editable={!loading}
+                    value={newPassword}
+                    onChangeText={setNewPassword}
+                    style={styles.textInput}
+                    secureTextEntry={!showPassword}
+                  />
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: 25, top: 15 }} >
+                    <Entypo
+                      name={showPassword ? 'eye' : 'eye-with-line'}
+                      size={18}
+                      color='white'
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
               <View>
                 <Text style={styles.labelText}>
@@ -164,6 +187,7 @@ const ChangePassword = ({ changePassword }) => {
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                   style={styles.textInput}
+                  secureTextEntry={true}
                 />
               </View>
               <View

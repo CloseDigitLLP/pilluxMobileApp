@@ -6,6 +6,7 @@ import common from "../../../styles/common";
 import colors from "../../../styles/colors";
 import { connect, useSelector } from "react-redux";
 import { updateProfile } from "../../../services/Auth/actions";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 const UpdateProfile = ({
     updateProfile
@@ -25,14 +26,34 @@ const UpdateProfile = ({
     const handleUpdate = async () => {
         try{
             setLoading(true)
+            if(!firstname){
+              return Toast.show({
+                type: 'error',
+                text1: "Prénom invalide"
+              })
+            }
+            if(!lastname){
+              return Toast.show({
+                type: 'error',
+                text1: "Nom invalide!"
+              })
+            }
             const payload = {
                 firstname,
                 lastname,
                 returning: true
             }
             await updateProfile(payload, userData?.id)
+            Toast.show({
+              type: "success",
+              text1: "Mise à jour du profil réussie"
+            })
         }catch(error){
             console.log(error)
+            Toast.show({
+              type: "error",
+              text1: "Erreur lors de la mise à jour du profil"
+            })
         }finally{
             setLoading(false)
         }

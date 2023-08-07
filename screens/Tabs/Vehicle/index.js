@@ -14,7 +14,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import common from "../../../styles/common";
 import SelectDropdown from "react-native-select-dropdown";
-import CarImage from "../../../assets/images/car.jpeg";
 import { connect, useSelector } from "react-redux";
 import { logout } from "../../../services/Auth/actions";
 import { useCallback, useEffect, useState } from "react";
@@ -40,6 +39,7 @@ import {
 import { createReport, getReportTypes, getReports, getReportsTypes, updateReport } from "../../../services/Reports/actions";
 import { baseUrl } from "../../../config/urls";
 import { useFocusEffect } from "@react-navigation/native";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 function Tabs({
   repairTypes,
@@ -695,6 +695,7 @@ function Vehicle({
   
   useFocusEffect(
     useCallback(() => {
+      setSelectedVehicle({})
       getVehicles()
     }, [])
   )
