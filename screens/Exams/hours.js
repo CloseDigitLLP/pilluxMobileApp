@@ -34,7 +34,7 @@ const ExamHours = (props) => {
     try{
         setLoading(true)
 
-        if(!Number.isNaN(parseInt(hours))){
+        if(Number.isNaN(parseInt(hours))){
            return Toast.show({
             type: "error",
             text1: "Veuillez entrer des heures valides!"

@@ -39,6 +39,7 @@ import {
 import { createReport, getReportTypes, getReports, getReportsTypes, updateReport } from "../../../services/Reports/actions";
 import { baseUrl } from "../../../config/urls";
 import { useFocusEffect } from "@react-navigation/native";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 function Tabs({
   repairTypes,
@@ -694,6 +695,7 @@ function Vehicle({
   
   useFocusEffect(
     useCallback(() => {
+      setSelectedVehicle({})
       getVehicles()
     }, [])
   )

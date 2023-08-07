@@ -18,6 +18,7 @@ import { getAllEvents, updateEvent } from "../../services/Events/actions";
 import moment from "moment/moment";
 import { useNavigation } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 function ButtonCard({ eventData, updateEvent, getAllEvents, events }) {
   const [showOption, setShowOption] = useState(null);
@@ -58,13 +59,7 @@ function ButtonCard({ eventData, updateEvent, getAllEvents, events }) {
         payload["motif"] = selectedMotif;
       }
       await updateEvent(payload, eventData?.id);
-      // await getAllEvents();
-      let eventIndex = events?.findIndex((item) => item?.id === eventData?.id)
-      if(eventIndex){ events[eventIndex] = {
-        ...events[eventIndex],
-        status,
-        comment
-      } }
+      await getAllEvents();
 
       resetStates();
       if (status === "present") {
