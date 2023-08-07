@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import {
   FlatList,
   Image,
+  RefreshControl,
   StyleSheet,
   Text,
   TextInput,
@@ -22,7 +23,7 @@ import { ActivityIndicator } from "react-native";
 function Students({ students, getAllStudents }) {
   const [searchText, setSearchText] = useState("");
   const [studentsData, setStudentsData] = useState([]);
-  const [loader, setLoader] = useState(false);
+  const [loader, setLoader] = useState(true);
 
   const [levels, setLevels] = useState([
     {
@@ -50,6 +51,8 @@ function Students({ students, getAllStudents }) {
   const [selectedLevel, setSelectedLevel] = useState({});
   const [expanded, setExpanded] = useState(false);
 
+  const [refreshing, setRefreshing] = useState(false)
+
   const navigation = useNavigation();
 
   const getAllStudentsAsync = async () => {
@@ -74,9 +77,9 @@ function Students({ students, getAllStudents }) {
   useEffect(() => {
     try{
       setLoader(true);
-    console.log("reach")
     if (students?.length) {
       if (searchText) {
+        // search filter
         let lowerCaseSearchText = searchText.toLowerCase();
         let searchFilteredData = students?.filter((studentData) => {
           let lowerCaseStudentName =
@@ -85,11 +88,13 @@ function Students({ students, getAllStudents }) {
         });
 
         if (selectedLevel?.id && selectedLevel.position !== 0) {
+          // level filter with search filter
           setStudentsData(filterByLevel(searchFilteredData, selectedLevel?.id));
         } else {
           setStudentsData(searchFilteredData);
         }
       } else if (selectedLevel?.id && selectedLevel.position !== 0) {
+        // level filter without search filter
         setStudentsData(filterByLevel(students, selectedLevel?.id));
       } else {
         setStudentsData(students);
@@ -142,6 +147,17 @@ function Students({ students, getAllStudents }) {
     );
   }
 
+  const handleRefresh = async () => {
+    try{
+      setRefreshing(true)
+      await getAllStudents()
+    }catch(error){
+      console.log(error)
+    }finally{
+      setRefreshing(false)
+    }
+  }
+
   return (
     <SafeAreaView>
       <StatusBar />
@@ -163,7 +179,6 @@ function Students({ students, getAllStudents }) {
                 <AntDesign name={"search1"} size={26} color={colors.white} />
               </Text>
             </View>
-            {console.log(loader)}
             <SelectDropdown
               data={levels}
               disabled={!levels?.length}
@@ -220,6 +235,9 @@ function Students({ students, getAllStudents }) {
                   renderItem={StudentCard}
                   keyExtractor={(item) => item?.id}
                   style={{ marginTop: 30 }}
+                  refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+                  }
                 />
                 {!studentsData?.length && (
                   <Text

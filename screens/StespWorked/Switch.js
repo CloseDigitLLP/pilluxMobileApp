@@ -12,6 +12,7 @@ import colors from "../../styles/colors";
 import { connect } from "react-redux";
 import { updateStudentSkill } from "../../services/Students/actions";
 import { getAllEvents, updateLocalEvents } from "../../services/Events/actions";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, getAllEvents, events, updateLocalEvents }) => {
 
@@ -76,7 +77,11 @@ const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, ge
 
     }catch(error){
       console.log(error)
-      ToastAndroid.show("Error while updating status!", ToastAndroid.SHORT)
+      Toast.show({
+        type: "error",
+        text1: "Error while updating status!"
+      })
+      // ToastAndroid.show("Error while updating status!", ToastAndroid.SHORT)
     }finally{
       setUpdateStateLoading(false)
     }

@@ -17,9 +17,9 @@ import SelectDropdown from "react-native-select-dropdown";
 import CarImage from "../../../assets/images/car.jpeg";
 import { connect, useSelector } from "react-redux";
 import { logout } from "../../../services/Auth/actions";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import colors from "../../../styles/colors";
-import { getVehicle } from "../../../services/Vehicles/actions";
+import { getVehicle, getVehicles } from "../../../services/Vehicles/actions";
 import { AntDesign } from "react-native-vector-icons";
 import DatePicker from "react-native-date-picker";
 import moment from "moment";
@@ -38,6 +38,8 @@ import {
   updatePenalty,
 } from "../../../services/Penalties/actions";
 import { createReport, getReportTypes, getReports, getReportsTypes, updateReport } from "../../../services/Reports/actions";
+import { baseUrl } from "../../../config/urls";
+import { useFocusEffect } from "@react-navigation/native";
 
 function Tabs({
   repairTypes,
@@ -264,7 +266,11 @@ function Tabs({
       let filename = result.uri.split("/").pop();
       let match = /\.(\w+)$/.exec(filename);
       if (!match[1]) {
-        return ToastAndroid.show("Unsupported file!", ToastAndroid.SHORT);
+        return Toast.show({
+          type: "error",
+          text1: "Unsupported file!"
+        })
+        // return ToastAndroid.show("Unsupported file!", ToastAndroid.SHORT);
       }
       let type = match[1] === "pdf" ? "application/pdf" : `image/${match[1]}`;
       setDocument({
@@ -645,7 +651,7 @@ function Vehicle({
   logout,
   getVehicle,
   vehicleData,
-  savedVehiclesData,
+  vehicles,
   getRepairTypes,
   repairTypes,
   createRepair,
@@ -663,34 +669,11 @@ function Vehicle({
   reports,
   getReportTypes,
   reportTypes,
-  updateReport
+  updateReport,
+  getVehicles
 }) {
-  const [vehicles, setVehicles] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState({});
-  const [vehicleReciepts, setVehicleReciepts] = useState({});
   const [expanded, setExpanded] = useState(false);
-
-  const { userDrivingschool } = useSelector(
-    (state) => state?.authReducer?.data?.data
-  );
-
-  useEffect(() => {
-    if (userDrivingschool?.length) {
-      let vehiclesData = [];
-
-      userDrivingschool?.map((drivingSchool) => {
-        if (drivingSchool?.drivingSchoolUser?.drivingSchoolVehicles?.length) {
-          drivingSchool?.drivingSchoolUser?.drivingSchoolVehicles?.map(
-            (vehicle) => {
-              vehiclesData.push(vehicle);
-            }
-          );
-        }
-      });
-
-      setVehicles(vehiclesData);
-    }
-  }, [userDrivingschool]);
 
   useEffect(() => {
     if (selectedVehicle?.id) {
@@ -706,18 +689,15 @@ function Vehicle({
     }
   };
 
-  useEffect(() => {
-    if (savedVehiclesData?.length && selectedVehicle?.id) {
-      let currentVehicle = savedVehiclesData?.find(
-        (vehicle) => vehicle?.id === selectedVehicle?.id
-      );
-      if (currentVehicle?.id) {
-        setVehicleReciepts(currentVehicle);
-      } else {
-        setVehicleReciepts({});
-      }
-    }
-  }, [savedVehiclesData, selectedVehicle]);
+  // useEffect(() => {
+  //   getVehicles()
+  // }, [])
+  
+  useFocusEffect(
+    useCallback(() => {
+      getVehicles()
+    }, [])
+  )
 
   return (
     <SafeAreaView>
@@ -779,7 +759,7 @@ function Vehicle({
                 <Text style={styles.labelText}>Photo de ma voiture</Text>
                 <Image
                   source={{
-                    uri: `http://192.168.1.42:5001/${selectedVehicle?.vehicleImage?.[0]?.path}`,
+                    uri: `${baseUrl}/${selectedVehicle?.vehicleImage?.[0]?.path}`,
                   }}
                   style={{ height: 150, width: 150 }}
                 />
@@ -906,7 +886,7 @@ const mapStateToProps = (state) => {
   return {
     vehicleData: state?.vehiclesReducer?.vehicle,
     repairTypes: state?.repairsReducer?.repairTypes,
-    savedVehiclesData: state?.vehiclesReducer?.savedVehiclesData,
+    vehicles: state?.vehiclesReducer?.vehicles,
     repairs: state?.repairsReducer?.repairs,
     penalties: state?.penaltiesReducer?.penalties,
     penaltyTypes: state?.penaltiesReducer?.penaltyTypes,
@@ -929,7 +909,8 @@ const mapDispatchToProps = {
   createReport,
   getReports,
   getReportTypes,
-  updateReport
+  updateReport,
+  getVehicles
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Vehicle);

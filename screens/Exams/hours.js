@@ -18,6 +18,7 @@ import moment from "moment";
 import { useNavigation } from "@react-navigation/native";
 import { connect, useSelector } from "react-redux";
 import { createExamWishlist } from "../../services/ExamWishlist/actions";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 const ExamHours = (props) => {
     const navigation = useNavigation()
@@ -34,7 +35,11 @@ const ExamHours = (props) => {
         setLoading(true)
 
         if(!Number.isNaN(parseInt(hours))){
-           return ToastAndroid.show("Veuillez entrer des heures valides!", ToastAndroid.SHORT) 
+           return Toast.show({
+            type: "error",
+            text1: "Veuillez entrer des heures valides!"
+          }) 
+          //  return ToastAndroid.show("Veuillez entrer des heures valides!", ToastAndroid.SHORT) 
         }
 
         const payload = {
@@ -45,10 +50,18 @@ const ExamHours = (props) => {
             status: 'pending'
         }
         await props?.createExamWishlist(payload)
-        ToastAndroid.show("Liste de souhaits d'examen ajoutée", ToastAndroid.SHORT)
+        Toast.show({
+          type: "success",
+          text1: "Liste de souhaits d'examen ajoutée"
+        })
+        // ToastAndroid.show("Liste de souhaits d'examen ajoutée", ToastAndroid.SHORT)
         navigation.navigate("studentsList")
     }catch(error){
-        ToastAndroid.show("Erreur lors de l'ajout de la liste de souhaits d'examen", ToastAndroid.SHORT)
+      Toast.show({
+        type: "error",
+        text1: "Erreur lors de l'ajout de la liste de souhaits d'examen"
+      })
+        // ToastAndroid.show("Erreur lors de l'ajout de la liste de souhaits d'examen", ToastAndroid.SHORT)
         console.log(error)
     }finally{
         setLoading(false)
