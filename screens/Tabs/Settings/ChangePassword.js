@@ -17,6 +17,7 @@ import colors from "../../../styles/colors";
 import common from "../../../styles/common";
 import { changePassword } from "../../../services/Auth/actions";
 import { connect } from "react-redux";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 const ChangePassword = ({ changePassword }) => {
   const [loading, setLoading] = useState(false);
@@ -28,31 +29,47 @@ const ChangePassword = ({ changePassword }) => {
     try {
       setLoading(true);
       if (!password) {
-        return ToastAndroid.show(
-          "Veuillez entrer un mot de passe valide",
-          ToastAndroid.SHORT
-        );
+        return Toast.show({
+          type: "error",
+          text1: "Veuillez entrer un mot de passe valide"
+        })
+        // return ToastAndroid.show(
+        //   "Veuillez entrer un mot de passe valide",
+        //   ToastAndroid.SHORT
+        // );
       }
 
       if (!newPassword) {
-        return ToastAndroid.show(
-          "Veuillez entrer un nouveau mot de passe valide",
-          ToastAndroid.SHORT
-        );
+        return Toast.show({
+          type: "error",
+          text1: "Veuillez entrer un nouveau mot de passe valide"
+        })
+        // return ToastAndroid.show(
+        //   "Veuillez entrer un nouveau mot de passe valide",
+        //   ToastAndroid.SHORT
+        // );
       }
 
       if (!(newPassword === confirmPassword)) {
-        return ToastAndroid.show(
-          "Les mots de passe ne correspondent pas",
-          ToastAndroid.SHORT
-        );
+        return Toast.show({
+          type: "error",
+          text1: "Les mots de passe ne correspondent pas"
+        })
+        // return ToastAndroid.show(
+        //   "Les mots de passe ne correspondent pas",
+        //   ToastAndroid.SHORT
+        // );
       }
 
       if ((newPassword === password)) {
-        return ToastAndroid.show(
-          "Le nouveau mot de passe doit être unique",
-          ToastAndroid.SHORT
-        );
+        return Toast.show({
+          type: "error",
+          text1: "Le nouveau mot de passe doit être unique"
+        })
+        // return ToastAndroid.show(
+        //   "Le nouveau mot de passe doit être unique",
+        //   ToastAndroid.SHORT
+        // );
       }
 
       const data = {
@@ -63,14 +80,26 @@ const ChangePassword = ({ changePassword }) => {
       let { payload } = await changePassword(data);
       
       if(!(payload?.data > 0)){
-        ToastAndroid.show("mauvais mot de passe saisi", ToastAndroid.SHORT)
+        Toast.show({
+          type: "error",
+          text1: "mauvais mot de passe saisi"
+        })
+        // ToastAndroid.show("mauvais mot de passe saisi", ToastAndroid.SHORT)
       }else{
-        ToastAndroid.show("Le mot de passe a été changé avec succès", ToastAndroid.SHORT)
+        Toast.show({
+          type: "Success",
+          text1: "Le mot de passe a été changé avec succès"
+        })
+        // ToastAndroid.show("Le mot de passe a été changé avec succès", ToastAndroid.SHORT)
         clearStates()
       }
     } catch (error) {
       console.log(error);
-      ToastAndroid.show("Error happened while changing password!", ToastAndroid.SHORT)
+      Toast.show({
+        type: "error",
+        text1: "Error happened while changing password!"
+      })
+      // ToastAndroid.show("Error happened while changing password!", ToastAndroid.SHORT)
     } finally {
       setLoading(false);
     }

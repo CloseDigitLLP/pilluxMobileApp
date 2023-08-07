@@ -39,7 +39,6 @@ export const createReport = (data, headers, options) => async (dispatch) => {
     try{
         dispatch({ type: actionTypes.CREATE_REPORT })
         let response = await api(reports(), 'post', data, headers, options)
-        console.log(response)
         return Promise.resolve(
             dispatch({
                 type: actionTypes.CREATE_REPORT_SUCCESS,
@@ -56,7 +55,6 @@ export const updateReport = (data, id, headers, options) => async (dispatch) => 
     try{
         dispatch({ type: actionTypes.UPDATE_REPORT })
         let response = await api(reports(id), 'put', data, headers, options)
-        console.log(response)
         return Promise.resolve(
             dispatch({
                 type: actionTypes.UPDATE_REPORT_SUCCESS,

@@ -18,6 +18,7 @@ import { login, savePassword, verifyEmail, verifyOtp } from "../../services/Auth
 import { connect } from "react-redux";
 import { StatusBar } from "expo-status-bar";
 import { Entypo } from "react-native-vector-icons";
+import Toast from "react-native-toast-message";
 
 function ForgetPassword({ props, setCurrentFlow, currentFlow }) {
   const [email, setEmail] = React.useState("");
@@ -33,12 +34,24 @@ function ForgetPassword({ props, setCurrentFlow, currentFlow }) {
       const { payload } = await props.verifyEmail({ email });
       if ( payload?.data?.length && !payload?.error ) {
         setCurrentFlow(3);
-        ToastAndroid.show("OTP envoyé!", ToastAndroid.SHORT)
+        Toast.show({
+          type: "success",
+          text1: "OTP envoyé!"
+        })
+        // ToastAndroid.show("OTP envoyé!", ToastAndroid.SHORT)
       } else {
-        ToastAndroid.show("Email invalide!", ToastAndroid.SHORT)
+        Toast.show({
+          type: "error",
+          text1: "Email invalide!"
+        })
+        // ToastAndroid.show("Email invalide!", ToastAndroid.SHORT)
       }
     }catch(error){
-      ToastAndroid.show("Error happned while verifying Email!", ToastAndroid.SHORT)
+      Toast.show({
+        type: "error",
+        text1: "Error happned while verifying Email!"
+      })
+      // ToastAndroid.show("Error happned while verifying Email!", ToastAndroid.SHORT)
     }finally{
       setLoading(false)
     }
@@ -48,18 +61,30 @@ function ForgetPassword({ props, setCurrentFlow, currentFlow }) {
     try{
       setLoading(true)
       if (verificationCode?.length < 6) {
-        return ToastAndroid.show("OTP invalide !", ToastAndroid.SHORT);
+        return Toast.show({
+          type: "error",
+          text1: "OTP invalide !"
+        })
+        // return ToastAndroid.show("OTP invalide !", ToastAndroid.SHORT);
       }
       let { payload } = await props.verifyOtp({ email, otp: verificationCode });
       if (payload?.isValid) {
         // otp verification success
         setCurrentFlow(4)
       }else {
-        ToastAndroid.show("OTP invalide !", ToastAndroid.SHORT);
+        Toast.show({
+          type: "error",
+          text1: "OTP invalide !"
+        })
+        // ToastAndroid.show("OTP invalide !", ToastAndroid.SHORT);
       }
     }catch(error){
       console.log(error)
-      return ToastAndroid.show("OTP invalide !", ToastAndroid.SHORT);
+      return Toast.show({
+        type: "error",
+        text1: "OTP invalide !"
+      })
+      // return ToastAndroid.show("OTP invalide !", ToastAndroid.SHORT);
     }finally {
       setLoading(false)
     }
@@ -69,22 +94,42 @@ function ForgetPassword({ props, setCurrentFlow, currentFlow }) {
     try{
       setLoading(true)
       if (newPassword?.length < 3) {
-        return ToastAndroid.show("nouveau mot de passe invalide !", ToastAndroid.SHORT);
+        return Toast.show({
+          type: "error",
+          text1: "nouveau mot de passe invalide !"
+        })
+        // return ToastAndroid.show("nouveau mot de passe invalide !", ToastAndroid.SHORT);
       }
       if(newPassword !== confirmPassword ){
-        return ToastAndroid.show("les mots de passe ne correspondent pas !", ToastAndroid.SHORT);
+        return Toast.show({
+          type: "error",
+          text1: "les mots de passe ne correspondent pas !"
+        })
+        // return ToastAndroid.show("les mots de passe ne correspondent pas !", ToastAndroid.SHORT);
       }
       let { payload } = await props.savePassword({ password: newPassword, email });
       if (payload?.isValid) {
         // save new password success
         setCurrentFlow(1)
-        ToastAndroid.show("mot de passe enregistré avec succès", ToastAndroid.SHORT);
+        Toast.show({
+          type: "success",
+          text1: "mot de passe enregistré avec succès !"
+        })
+        // ToastAndroid.show("mot de passe enregistré avec succès", ToastAndroid.SHORT);
       }else {
-        ToastAndroid.show("Erreur lors de la mise à jour du mot de passe !", ToastAndroid.SHORT);
+        Toast.show({
+          type: "error",
+          text1: "Erreur lors de la mise à jour du mot de passe !"
+        })
+        // ToastAndroid.show("Erreur lors de la mise à jour du mot de passe !", ToastAndroid.SHORT);
       }
     }catch(error){
       console.log(error)
-      return ToastAndroid.show("Erreur lors de la mise à jour du mot de passe !", ToastAndroid.SHORT);
+      return Toast.show({
+        type: "error",
+        text1: "Erreur lors de la mise à jour du mot de passe !"
+      })
+      // return ToastAndroid.show("Erreur lors de la mise à jour du mot de passe !", ToastAndroid.SHORT);
     }finally {
       setLoading(false)
     }
@@ -216,13 +261,24 @@ function Login({ props, currentFlow, setCurrentFlow }) {
       setLoading(true)
       let { payload } = await props.login(email, password);
       if(payload?.data?.id){
-        ToastAndroid.show("Connexion réussie", ToastAndroid.SHORT)
+        Toast.show({
+          type: "success",
+          text1: "Connexion réussie"
+        })
+        // ToastAndroid.show("Connexion réussie", ToastAndroid.SHORT)
       }else{
-        ToastAndroid.show("les informations d'identification invalides", ToastAndroid.SHORT)
+        Toast.show({
+          type: "error",
+          text1: "les informations d'identification invalides!"
+        })
+        // ToastAndroid.show("les informations d'identification invalides", ToastAndroid.SHORT)
       }
     }catch(error){
       console.log(error)
-      ToastAndroid.show("les informations d'identification invalides!", ToastAndroid.SHORT)
+      Toast.show({
+        type: "error",
+        text1: "les informations d'identification invalides!"
+      })
     }finally{
       setLoading(false)
     }

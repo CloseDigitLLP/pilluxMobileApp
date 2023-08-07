@@ -3,10 +3,11 @@ import thunk from 'redux-thunk';
 import reducers from './reducers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persistStore, persistReducer } from 'redux-persist'
+import ExpoFileSystemStorage from "redux-persist-expo-filesystem"
 
 const persistConfig = {
     key: 'root',
-    storage: AsyncStorage
+    storage: ExpoFileSystemStorage
 }
 
 const persistedReducer = persistReducer(persistConfig, reducers)

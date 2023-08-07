@@ -39,7 +39,6 @@ export const createRepair = (data, headers, options) => async (dispatch) => {
     try{
         dispatch({ type: actionTypes.CREATE_REPAIR })
         let response = await api(repairs(), 'post', data, headers, options)
-        console.log(response)
         return Promise.resolve(
             dispatch({
                 type: actionTypes.CREATE_REPAIR_SUCCESS,
@@ -56,7 +55,6 @@ export const updateRepair = (data, id, headers, options) => async (dispatch) => 
     try{
         dispatch({ type: actionTypes.UPDATE_REPAIR })
         let response = await api(repairs(id), 'put', data, headers, options)
-        console.log(response)
         return Promise.resolve(
             dispatch({
                 type: actionTypes.UPDATE_REPAIR_SUCCESS,

@@ -12,6 +12,7 @@ import colors from "../../styles/colors";
 import { connect } from "react-redux";
 import { updateStudentSkill } from "../../services/Students/actions";
 import { getAllEvents, updateLocalEvents } from "../../services/Events/actions";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, getAllEvents, events, updateLocalEvents }) => {
 
@@ -53,30 +54,34 @@ const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, ge
 
       setUpdateStateLoading(true)
       let { payload } = await updateStudentSkill([payloadData])
-      // await getAllEvents()
+      await getAllEvents()
 
-      updateLocalEvents(events.map((event) => {
-        if(event?.student_id === payload[0]?.student_id ){
-          return {
-            ...event,
-            studentGenerals: {
-              ...event['studentGenerals'],
-              studentSkills: [
-                ...event['studentGenerals']['studentSkills'],
-                payload[0]
-            ]
-            }
-          }
-        }else{
-          return event
-        }
-      }))
+      // updateLocalEvents(events.map((event) => {
+      //   if(event?.student_id === payload[0]?.student_id ){
+      //     return {
+      //       ...event,
+      //       studentGenerals: {
+      //         ...event['studentGenerals'],
+      //         studentSkills: [
+      //           ...event['studentGenerals']['studentSkills'],
+      //           payload[0]
+      //       ]
+      //       }
+      //     }
+      //   }else{
+      //     return event
+      //   }
+      // }))
 
       setSwitchState(switchState + 1)
 
     }catch(error){
       console.log(error)
-      ToastAndroid.show("Error while updating status!", ToastAndroid.SHORT)
+      Toast.show({
+        type: "error",
+        text1: "Error while updating status!"
+      })
+      // ToastAndroid.show("Error while updating status!", ToastAndroid.SHORT)
     }finally{
       setUpdateStateLoading(false)
     }

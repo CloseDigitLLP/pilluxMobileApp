@@ -8,12 +8,17 @@ import Navigation from './navigation';
 import { Provider } from 'react-redux';
 import { persistor, store } from './services/store';
 import { PersistGate } from 'redux-persist/integration/react';
+import Toast from 'react-native-toast-message';
 
 export default function App() {
   return (
     <Provider store={store} >
       <PersistGate loading={<ActivityIndicator />} persistor={persistor} >
         <Navigation />
+        <Toast
+        position='bottom'
+        bottomOffset={40}
+      />
       </PersistGate>
     </Provider>
   )

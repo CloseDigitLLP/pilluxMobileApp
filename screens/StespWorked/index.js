@@ -150,7 +150,7 @@ const StepedStudent = (props) => {
     }
   }, [props.events, eventId]);
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ backgroundColor: colors.primary }} >
       <View style={common.container}>
         <View style={common.headerPart}>
           <Text style={common.headerText}>Étapes travaillées avec l'élève</Text>

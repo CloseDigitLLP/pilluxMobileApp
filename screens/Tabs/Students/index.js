@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import {
   FlatList,
   Image,
+  RefreshControl,
   StyleSheet,
   Text,
   TextInput,
@@ -17,36 +18,97 @@ import { connect } from "react-redux";
 import { getAllStudents } from "../../../services/Students/actions";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { ActivityIndicator } from "react-native";
 
 function Students({ students, getAllStudents }) {
   const [searchText, setSearchText] = useState("");
   const [studentsData, setStudentsData] = useState([]);
+  const [loader, setLoader] = useState(true);
 
-  const [levels, setLevels] = useState([]);
+  const [levels, setLevels] = useState([
+    {
+      id: 0,
+      name: "All",
+    },
+    {
+      id: 1,
+      name: "MAITRISER",
+    },
+    {
+      id: 2,
+      name: "APPRÉHENDER",
+    },
+    {
+      id: 3,
+      name: "CIRCULER",
+    },
+    {
+      id: 4,
+      name: "PRATIQUER",
+    },
+  ]);
+
   const [selectedLevel, setSelectedLevel] = useState({});
   const [expanded, setExpanded] = useState(false);
 
+  const [refreshing, setRefreshing] = useState(false)
+
   const navigation = useNavigation();
 
-  useEffect(() => {
-    getAllStudents();
-  }, []);
+  const getAllStudentsAsync = async () => {
+    try {
+      setLoader(true);
+      await getAllStudents();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoader(false);
+    }
+  };
 
   useEffect(() => {
-    if(students?.length){
-      if(searchText){
-        let lowerCaseSearchText = searchText.toLowerCase()
-        setStudentsData(students?.filter((studentData) => {
-          let lowerCaseStudentName = (`${studentData?.firstname} ${studentData?.lastname}`)?.toLowerCase()
-          return lowerCaseStudentName?.includes(lowerCaseSearchText)
-        }))
-      }else{
-        setStudentsData(students)
+    getAllStudentsAsync();
+  }, []);
+
+  const filterByLevel = (data, conditionValue) => {
+    return data?.filter((item) => item?.level?.position === conditionValue);
+  };
+
+  useEffect(() => {
+    try{
+      setLoader(true);
+    if (students?.length) {
+      if (searchText) {
+        // search filter
+        let lowerCaseSearchText = searchText.toLowerCase();
+        let searchFilteredData = students?.filter((studentData) => {
+          let lowerCaseStudentName =
+            `${studentData?.firstname} ${studentData?.lastname}`?.toLowerCase();
+          return lowerCaseStudentName?.includes(lowerCaseSearchText);
+        });
+
+        if (selectedLevel?.id && selectedLevel.position !== 0) {
+          // level filter with search filter
+          setStudentsData(filterByLevel(searchFilteredData, selectedLevel?.id));
+        } else {
+          setStudentsData(searchFilteredData);
+        }
+      } else if (selectedLevel?.id && selectedLevel.position !== 0) {
+        // level filter without search filter
+        setStudentsData(filterByLevel(students, selectedLevel?.id));
+      } else {
+        setStudentsData(students);
       }
-    }else{
-      setStudentsData([])
+    } else {
+      setStudentsData([]);
     }
-  }, [students, searchText])
+  }catch(error){
+    console.log(error)
+  }finally{
+    console.log("white")
+    setLoader(false);
+  }
+  }, [students, searchText, selectedLevel]);
 
   function StudentCard({ item }) {
     const handleStudentClick = () => {
@@ -83,6 +145,17 @@ function Students({ students, getAllStudents }) {
         </View>
       </TouchableOpacity>
     );
+  }
+
+  const handleRefresh = async () => {
+    try{
+      setRefreshing(true)
+      await getAllStudents()
+    }catch(error){
+      console.log(error)
+    }finally{
+      setRefreshing(false)
+    }
   }
 
   return (
@@ -131,6 +204,7 @@ function Students({ students, getAllStudents }) {
               }}
               onFocus={() => setExpanded(true)}
               onBlur={() => setExpanded(false)}
+              defaultValueByIndex={0}
               buttonTextStyle={{ color: colors.white, fontSize: 16 }}
               renderDropdownIcon={() => {
                 return (
@@ -152,15 +226,33 @@ function Students({ students, getAllStudents }) {
                 color: colors.white,
               }}
             />
-            <FlatList
-              data={studentsData}
-              renderItem={StudentCard}
-              keyExtractor={(item) => item?.id}
-              style={{ marginTop: 30 }}
-            />
-            {
-              !studentsData?.length && <Text style={{ color: colors.white, textAlign: 'center', fontSize: 16 }} > No records found! </Text>
-            }
+            {loader ? (
+              <ActivityIndicator />
+            ) : (
+              <>
+                <FlatList
+                  data={studentsData}
+                  renderItem={StudentCard}
+                  keyExtractor={(item) => item?.id}
+                  style={{ marginTop: 30 }}
+                  refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+                  }
+                />
+                {!studentsData?.length && (
+                  <Text
+                    style={{
+                      color: colors.white,
+                      textAlign: "center",
+                      fontSize: 16,
+                    }}
+                  >
+                    {" "}
+                    No records found!{" "}
+                  </Text>
+                )}
+              </>
+            )}
           </View>
         </View>
       </View>
