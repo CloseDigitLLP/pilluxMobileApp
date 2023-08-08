@@ -77,6 +77,12 @@ function Tabs({
   const [repairId, setRepairId] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedTableData, setSelectedTableData] = useState([]);
+  const [error, setError] = useState({ 
+    amount: false,
+    date: false,
+    document: false,
+    type: false
+   })
 
   useEffect(() => {
     if (!repairTypes?.length) {
@@ -221,9 +227,40 @@ function Tabs({
     }
   };
 
+  const changeError = (label) => {
+    let copyError = error
+    copyError[label] = false
+    error?.[label] && setError(copyError)
+  }
+
   const uploadRepair = async () => {
     try {
       setLoading(true);
+
+      if(!selectedType?.id){
+        return setError({ ...error, type: true })
+      }else{
+        changeError('type')
+      }
+
+      if(!amount){
+        return setError({ ...error, amount: true })
+      }else{
+        changeError('amount')
+      }
+
+      if(!date){
+        return setError({ ...error, date: true })
+      }else{
+        changeError('date')
+      }
+
+      if(!document?.name){
+        return setError({ ...error, document: true })
+      }else{
+        changeError('document')
+      }
+
       let payload = new FormData();
       let data = {
         vehicle_id: selectedVehicle?.id,
@@ -531,11 +568,14 @@ function Tabs({
                       backgroundColor: document?.name
                         ? colors.cyan
                         : colors.gray,
+                        borderColor: 'red',
+                        borderWidth: error?.document ? 1 : 0
                     }}
                   >
                     {document?.name ? document.name : "Tap to upload document"}
                   </Text>
                 </TouchableOpacity>
+                { error?.document && <Text style={{ color: 'red' }} >document est requis!</Text> }
               </View>
               <View>
                 <Text style={styles.labelText}>Type d'amende</Text>
@@ -563,6 +603,8 @@ function Tabs({
                     backgroundColor: colors.gray,
                     borderRadius: 9999,
                     height: 40,
+                    borderWidth: error?.type ? 1 : 0,
+                    borderColor: 'red'
                   }}
                   disabled={loading}
                   onFocus={() => setExpanded(true)}
@@ -588,6 +630,7 @@ function Tabs({
                     color: colors.white,
                   }}
                 />
+                { error?.type && <Text style={{ color: 'red' }} >le type d'enregistrement est requis!</Text> }
               </View>
               <View>
                 <Text style={styles.labelText}>Comment</Text>
@@ -607,8 +650,9 @@ function Tabs({
                   onChangeText={setAmount}
                   keyboardType="numeric"
                   maxLength={10}
-                  style={styles.textInput}
+                  style={error?.amount ? { ...styles.textInput, borderColor: 'red', borderWidth: 1 } : styles.textInput}
                 />
+                { error?.amount && <Text style={{ color: 'red' }} >le montant est requis!</Text> }
               </View>
               <View
                 style={{
@@ -670,7 +714,8 @@ function Vehicle({
   getReportTypes,
   reportTypes,
   updateReport,
-  getVehicles
+  getVehicles,
+  getVehiclesLoader
 }) {
   const [selectedVehicle, setSelectedVehicle] = useState({});
   const [expanded, setExpanded] = useState(false);
@@ -714,8 +759,8 @@ function Vehicle({
                 <Text style={styles.labelText}>Select vehicle</Text>
                 <SelectDropdown
                   data={vehicles}
-                  disabled={!vehicles?.length}
-                  defaultButtonText={!vehicles?.length ? "No Vehicle found!" : "Select an option."}
+                  disabled={getVehiclesLoader || !vehicles?.length}
+                  defaultButtonText={getVehiclesLoader ? "Loading..." : !vehicles?.length ? "No Vehicle found!" : "Select an option."}
                   onSelect={(item) => {
                     setSelectedVehicle(item);
                   }}
@@ -892,7 +937,8 @@ const mapStateToProps = (state) => {
     penalties: state?.penaltiesReducer?.penalties,
     penaltyTypes: state?.penaltiesReducer?.penaltyTypes,
     reports: state?.reportsReducer?.reports,
-    reportTypes: state?.reportsReducer?.reportTypes
+    reportTypes: state?.reportsReducer?.reportTypes,
+    getVehiclesLoader: state?.vehiclesReducer?.getVehiclesLoader
   };
 };
 

@@ -18,7 +18,6 @@ export const login = (email, password) => async (dispatch) => {
 
 
         let response = await api(urls.login(), 'post', postData)
-        console.log(response?.data)
 
         if(response?.data?.error){ return Promise.reject(dispatch({ type: actionTypes.LOGIN_FAILED, payload: response?.data })) }
 

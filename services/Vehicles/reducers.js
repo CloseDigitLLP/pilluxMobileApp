@@ -6,6 +6,7 @@ const initialState = {
     savedVehiclesData: [],
     vehicle: {},
     loading: false,
+    getVehiclesLoader: false,
     error: ''
 }
 
@@ -40,6 +41,7 @@ export default function vehiclesReducer (state=initialState, action) {
             return {
                 ...state,
                 loading: true,
+                getVehiclesLoader: true,
                 error: '',
                 vehicles: []
             }
@@ -48,6 +50,7 @@ export default function vehiclesReducer (state=initialState, action) {
             return {
                 ...state,
                 loading: false,
+                getVehiclesLoader: false,
                 error: '',
                 vehicles: action.payload,
             }
@@ -56,6 +59,7 @@ export default function vehiclesReducer (state=initialState, action) {
             return {
                 ...state,
                 loading: false,
+                getVehiclesLoader: false,
                 error: action.payload,
                 vehicles: []
             }

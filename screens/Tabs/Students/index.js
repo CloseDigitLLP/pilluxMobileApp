@@ -20,10 +20,9 @@ import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ActivityIndicator } from "react-native";
 
-function Students({ students, getAllStudents }) {
+function Students({ students, getAllStudents, studentsLoader }) {
   const [searchText, setSearchText] = useState("");
   const [studentsData, setStudentsData] = useState([]);
-  const [loader, setLoader] = useState(true);
 
   const [levels, setLevels] = useState([
     {
@@ -57,12 +56,10 @@ function Students({ students, getAllStudents }) {
 
   const getAllStudentsAsync = async () => {
     try {
-      setLoader(true);
       await getAllStudents();
     } catch (error) {
       console.log(error);
     } finally {
-      setLoader(false);
     }
   };
 
@@ -76,7 +73,6 @@ function Students({ students, getAllStudents }) {
 
   useEffect(() => {
     try{
-      setLoader(true);
     if (students?.length) {
       if (searchText) {
         // search filter
@@ -105,8 +101,6 @@ function Students({ students, getAllStudents }) {
   }catch(error){
     console.log(error)
   }finally{
-    console.log("white")
-    setLoader(false);
   }
   }, [students, searchText, selectedLevel]);
 
@@ -226,7 +220,7 @@ function Students({ students, getAllStudents }) {
                 color: colors.white,
               }}
             />
-            {loader ? (
+            {studentsLoader ? (
               <ActivityIndicator />
             ) : (
               <>
@@ -275,6 +269,7 @@ const styles = StyleSheet.create({
 const mapStateProps = (state) => {
   return {
     students: state?.studentsReducer?.students,
+    studentsLoader: state?.studentsReducer?.loading
   };
 };
 

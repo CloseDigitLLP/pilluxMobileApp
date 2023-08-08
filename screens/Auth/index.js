@@ -138,7 +138,6 @@ function ForgetPassword({ props, setCurrentFlow, currentFlow }) {
   // set to login if pressed back
   React.useEffect(() => {
     const backAction = () => {
-      console.log("back pressed");
       setCurrentFlow((currentFlow - 1) > 1 ? (currentFlow - 1) === 3 ? 2 : currentFlow - 1 : 1);
       return true;
     };

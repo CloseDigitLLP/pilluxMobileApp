@@ -62,7 +62,6 @@ export const updatePenalty = (data, id, headers, options) => async (dispatch) =>
             })
         )
     }catch(error){
-        console.log(JSON.stringify(error,2,2))
         return Promise.reject(dispatch({ type: actionTypes.UPDATE_PENALTY_FAILED, payload: error?.response?.data?.message || error?.message }))
     }
 }
