@@ -287,7 +287,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                             {eventData?.studentGenerals?.mobile}
                           </Text>
                           <Text style={common.contentText}>
-                            Boîte : manuelle
+                            Boîte : {eventData?.gearbox}
                           </Text>
                           <Text style={common.contentText}>
                             Type : {eventData?.type}
@@ -398,7 +398,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                     </View>
                   );
                 })} */}
-                {upcomingEventsLite?.length < 1 && (
+                {upcomingEvents?.length < 1 && (
                   <Text
                     style={{
                       textAlign: "center",
@@ -439,7 +439,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                             {eventData?.studentGenerals?.mobile}
                           </Text>
                           <Text style={common.contentText}>
-                            Boîte : manuelle
+                            Boîte : {eventData?.gearbox}
                           </Text>
                           <Text style={common.contentText}>
                             Type : {eventData?.type}
@@ -489,69 +489,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                 }}
                 keyExtractor={(eventData) => eventData?.id}
               />
-                {pastEventsLite?.map((eventData, index) => {
-                  return (
-                    <View
-                      key={index}
-                      style={{ ...styles.cardBox, ...styles.cardBoxGray }}
-                    >
-                      <View style={common.cardTextPart}>
-                        <View style={common.leftText}>
-                          <Text style={common.contentText}>
-                            {eventData?.studentGenerals?.firstname}{" "}
-                            {eventData?.studentGenerals?.lastname} |{" "}
-                            {eventData?.studentGenerals?.mobile}
-                          </Text>
-                          <Text style={common.contentText}>
-                            Boîte : manuelle
-                          </Text>
-                          <Text style={common.contentText}>
-                            Type : {eventData?.type}
-                          </Text>
-                        </View>
-                        <View style={common.rightText}>
-                          <Text
-                            style={{
-                              ...common.contentText,
-                              ...common.contentTextRight,
-                            }}
-                          >
-                            {moment(eventData?.start_horary).format(
-                              "DD/MM/YYYY"
-                            )}
-                          </Text>
-                          <Text
-                            style={{
-                              ...common.contentText,
-                              ...common.contentTextRight,
-                            }}
-                          >
-                            {moment(eventData?.start_horary).format("HH[h]mm")}
-                          </Text>
-                          <Text
-                            style={{
-                              ...common.contentText,
-                              ...common.contentTextRight,
-                            }}
-                          >
-                            {moment(eventData?.end_horary).diff(
-                              moment(eventData?.start_horary),
-                              "hours"
-                            )}
-                            h
-                          </Text>
-                        </View>
-                      </View>
-                      <ButtonCard
-                        loading={loading}
-                        eventData={eventData}
-                        updateEvent={updateEvent}
-                        getAllEvents={getAllEvents}
-                      />
-                    </View>
-                  );
-                })}
-                {pastEventsLite?.length < 1 && (
+                {pastEvents?.length < 1 && (
                   <Text
                     style={{
                       textAlign: "center",
