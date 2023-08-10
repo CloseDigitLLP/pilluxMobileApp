@@ -12,7 +12,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "../../styles/colors";
 import common from "../../styles/common";
-import { AntDesign } from "react-native-vector-icons";
 import DatePicker from "react-native-date-picker";
 import moment from "moment";
 import { useNavigation } from "@react-navigation/native";
