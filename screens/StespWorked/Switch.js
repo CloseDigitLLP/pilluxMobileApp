@@ -89,7 +89,7 @@ const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, ge
 
   if(updateStateLoading){
     return (
-      <ActivityIndicator />
+      <ActivityIndicator style={{ width: 55 }}  />
     )
   }else{
     return (

@@ -45,13 +45,18 @@ const CustomAccordion = ({ skillsData, studentId }) => {
         {expanded && (
           <View
             style={{
-              ...common.content,
+              backgroundColor: '#f0f0f0',
+              borderTopColor: 'black',
+              borderTopWidth: 1,
+              borderStyle: 'solid',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 10,
               paddingHorizontal: 5,
               paddingVertical: 15,
-              marginTop: 0,
+              marginTop: 0
             }}
           >
-            <ScrollView>
               {skillsData?.map((skillData, index) => {
                 return (
                   <View key={index} style={styles.skillCard}>
@@ -64,7 +69,6 @@ const CustomAccordion = ({ skillsData, studentId }) => {
                   </View>
                 );
               })}
-            </ScrollView>
           </View>
         )}
       </View>
@@ -164,7 +168,7 @@ const StepedStudent = (props) => {
                   {eventData?.studentGenerals?.lastname} |{" "}
                   {eventData?.studentGenerals?.mobile}
                 </Text>
-                <Text style={common.contentText}>Boîte : manuelle</Text>
+                <Text style={common.contentText}>Boîte : {eventData?.gearbox}</Text>
                 <Text style={common.contentText}>Type : {eventData?.type}</Text>
               </View>
               <View style={common.rightText}>
