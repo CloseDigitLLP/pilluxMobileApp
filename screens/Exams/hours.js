@@ -119,100 +119,103 @@ const ExamHours = (props) => {
 
   return (
     <SafeAreaView>
-      <View style={common.container}>
-        <View style={common.headerPart}>
-          <Text style={common.headerText}>
-            L'élève est prêt(e) pour l'examen
-          </Text>
-        </View>
-        <View style={common.mainContent}>
-          <View style={common.cardBoxEvent}>
-            <View style={styles.examSteps}>
-              <Text style={styles.stepsText}>
-                Sélectionner les horaires des examens
-              </Text>
-            </View>
-            <View style={{ paddingHorizontal: 10 }} >
-              {
-                showPicker &&
-                <View>
-                  <MonthPicker
-                    value={month}
-                    onChange={onValueChange}
-                    mode='full'
-                    locale="en"
-                    okButton="Confirm"
-                    cancelButton="Abort"
-                  />
+        <View style={common.container}>
+          <View style={common.headerPart}>
+            <Text style={common.headerText}>
+              L'élève est prêt(e) pour l'examen
+            </Text>
+          </View>
+          <View style={common.mainContent}>
+            <ScrollView>
+              <View style={common.cardBoxEvent}>
+                <View style={styles.examSteps}>
+                  <Text style={styles.stepsText}>
+                    Sélectionner les horaires des examens
+                  </Text>
                 </View>
-              }
-              <View style={{ marginTop: 20 }} >
-                <Text style={styles.labelText}>Select month</Text>
-                <TouchableOpacity
-                        onPress={() => {
-                          if (!loading) {
-                            setShowPicker(true);
-                          }
-                        }}
-                      >
-                        <Text style={{ ...styles.textWithBox, marginBottom: 0}}>
-                          {moment(month).format("MM-YYYY")}
-                        </Text>
-                      </TouchableOpacity>
-              </View>
-              <View style={{ marginTop: 20 }} >
-                <Text style={styles.labelText}>Exam start time</Text>
-                <View style={{ gap: 20 }} >
-                  {weeksData?.map((item, index) => {
-                    return (
-                      <TouchableOpacity
-                        onPress={() => {
-                          if (!loading) {
-                            setSelectedWeek(index);
-                          }
-                        }}
-                      >
-                        <Text style={{ ...styles.textWithBox, marginBottom: 0, backgroundColor: selectedWeek === index ? colors.cyan : colors.gray }}>
-                          {item?.startDate} - {item?.endDate}
-                        </Text>
-                      </TouchableOpacity>
-                    )
-                  })}
+                <View style={{ paddingHorizontal: 10 }} >
+                  {
+                    showPicker &&
+                    <View>
+                      <MonthPicker
+                        value={month}
+                        onChange={onValueChange}
+                        mode='full'
+                        locale="en"
+                        okButton="Confirm"
+                        cancelButton="Abort"
+                      />
+                    </View>
+                  }
+                  <View style={{ marginTop: 20 }} >
+                    <Text style={styles.labelText}>Select month</Text>
+                    <TouchableOpacity
+                            onPress={() => {
+                              if (!loading) {
+                                setShowPicker(true);
+                              }
+                            }}
+                          >
+                            <Text style={{ ...styles.textWithBox, marginBottom: 0}}>
+                              {moment(month).format("MM-YYYY")}
+                            </Text>
+                          </TouchableOpacity>
+                  </View>
+                  <View style={{ marginTop: 20 }} >
+                    <Text style={styles.labelText}>Exam start time</Text>
+                    <View style={{ gap: 20 }} >
+                      {weeksData?.map((item, index) => {
+                        return (
+                          <TouchableOpacity
+                            onPress={() => {
+                              if (!loading) {
+                                setSelectedWeek(index);
+                              }
+                            }}
+                            key={index}
+                          >
+                            <Text style={{ ...styles.textWithBox, marginBottom: 0, backgroundColor: selectedWeek === index ? colors.cyan : colors.gray }}>
+                              {item?.startDate} - {item?.endDate}
+                            </Text>
+                          </TouchableOpacity>
+                        )
+                      })}
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-evenly",
+                      paddingVertical: 50,
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={styles.btnContainer}
+                      onPress={handleUpdate}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <ActivityIndicator />
+                      ) : (
+                        <Text style={styles.btnText}>Valider</Text>
+                      )}
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        ...styles.btnContainer,
+                        backgroundColor: colors.gray,
+                      }}
+                      disabled={loading}
+                      onPress={handleCancel}
+                    >
+                      <Text style={styles.btnText}>Annuler</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-evenly",
-                  paddingVertical: 50,
-                }}
-              >
-                <TouchableOpacity
-                  style={styles.btnContainer}
-                  onPress={handleUpdate}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <ActivityIndicator />
-                  ) : (
-                    <Text style={styles.btnText}>Valider</Text>
-                  )}
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    ...styles.btnContainer,
-                    backgroundColor: colors.gray,
-                  }}
-                  disabled={loading}
-                  onPress={handleCancel}
-                >
-                  <Text style={styles.btnText}>Annuler</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+            </ScrollView>
           </View>
         </View>
-      </View>
     </SafeAreaView>
   );
 };
