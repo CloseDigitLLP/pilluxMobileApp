@@ -14,7 +14,7 @@ import { updateStudentSkill } from "../../services/Students/actions";
 import { getAllEvents, updateLocalEvents } from "../../services/Events/actions";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 
-const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, getAllEvents, events, updateLocalEvents }) => {
+const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, getAllEvents, events, updateLocalEvents, setSkillsData, skillsData, checkedSkills, setCheckedSkills }) => {
 
     // Abordé => 1
     // Traité => 2
@@ -53,8 +53,17 @@ const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, ge
       skillData?.student_skill_id && (payloadData['id'] = skillData?.student_skill_id)
 
       setUpdateStateLoading(true)
-      let { payload } = await updateStudentSkill([payloadData])
-      await getAllEvents()
+      // let { payload } = await updateStudentSkill([payloadData])
+      let savedCheckedSkillIndex = checkedSkills?.findIndex((item) => (item?.skill_id === skillData?.id))
+      if(savedCheckedSkillIndex >= 0){
+        let copyData = checkedSkills
+        copyData[savedCheckedSkillIndex] = payloadData
+        setCheckedSkills(copyData)
+      }else{
+        setCheckedSkills([ ...checkedSkills, payloadData ])
+      }
+      // await getAllEvents()
+
 
       // updateLocalEvents(events.map((event) => {
       //   if(event?.student_id === payload[0]?.student_id ){
@@ -73,7 +82,22 @@ const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, ge
       //   }
       // }))
 
-      setSwitchState(switchState + 1)
+      setSkillsData(skillsData?.map((level) => {
+        return level?.map((skill) => {
+          if(skill?.id === skillData?.id){
+            return {
+              ...skill,
+              status: switchState === 1 ? "Traité" : "Assimilé"
+            }
+          }else{
+            return {
+              ...skill
+            }
+          }
+        })
+      }))
+
+      // setSwitchState(switchState + 1)
 
     }catch(error){
       console.log(error)

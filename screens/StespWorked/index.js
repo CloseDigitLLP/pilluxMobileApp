@@ -7,14 +7,18 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign } from "react-native-vector-icons";
 import moment from "moment";
 import ThreeStateSwitch from "./Switch";
 import { connect } from "react-redux";
+import { updateStudentSkill } from "../../services/Students/actions";
+import { useNavigation } from "@react-navigation/native";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
-const CustomAccordion = ({ skillsData, studentId }) => {
+const CustomAccordion = ({ data, studentId, setSkillsData, skillsData, checkedSkills, setCheckedSkills }) => {
   const [expanded, setExpanded] = useState(false);
 
   const handleAccordianClick = () => {
@@ -34,7 +38,7 @@ const CustomAccordion = ({ skillsData, studentId }) => {
           onPress={handleAccordianClick}
         >
           <Text style={{ ...common.title, width: "70%" }}>
-            Etapes ({skillsData[0]?.name})
+            Etapes ({data[0]?.name})
           </Text>
           <AntDesign
             name={expanded ? "caretup" : "caretdown"}
@@ -57,18 +61,22 @@ const CustomAccordion = ({ skillsData, studentId }) => {
               marginTop: 0
             }}
           >
-              {skillsData?.map((skillData, index) => {
-                return (
-                  <View key={index} style={styles.skillCard}>
-                    <ThreeStateSwitch
-                      status={skillData?.status}
-                      skillData={skillData}
-                      studentId={studentId}
-                    />
-                    <Text style={{ width: "70%" }}>{skillData?.level}</Text>
-                  </View>
-                );
-              })}
+            {data?.map((skillData, index) => {
+              return (
+                <View key={index} style={styles.skillCard}>
+                  <ThreeStateSwitch
+                    status={skillData?.status}
+                    skillData={skillData}
+                    studentId={studentId}
+                    skillsData={skillsData}
+                    setSkillsData={setSkillsData}
+                    checkedSkills={checkedSkills}
+                    setCheckedSkills={setCheckedSkills}
+                  />
+                  <Text style={{ width: "70%" }}>{skillData?.level}</Text>
+                </View>
+              );
+            })}
           </View>
         )}
       </View>
@@ -80,6 +88,10 @@ const StepedStudent = (props) => {
   const [skillsData, setSkillData] = useState([]);
   const [eventId, setEventId] = useState(null);
   const [eventData, setEventData] = useState({});
+  const [checkedSkills, setCheckedSkills] = useState([])
+  const [saveSkillLoader, setSaveSkillLoader] = useState(false)
+  
+  const navigation = useNavigation()
 
   useEffect(() => {
     if (eventData?.studentGenerals) {
@@ -135,9 +147,9 @@ const StepedStudent = (props) => {
         }
       }
 
-      filteredData?.sort((a, b) => b?.[0]?.position - a?.[0]?.position);
+      allData?.sort((a, b) => b?.[0]?.position - a?.[0]?.position);
 
-      setSkillData(filteredData);
+      setSkillData(allData);
     }
   }, [eventData]);
 
@@ -153,6 +165,23 @@ const StepedStudent = (props) => {
       setEventData(event);
     }
   }, [props.events, eventId]);
+
+  const handleSaveSkills = async () => {
+    try{
+      setSaveSkillLoader(true)
+      if(checkedSkills?.length>0){
+        await props?.updateStudentSkill(checkedSkills)
+      }
+      navigation.goBack()
+    }catch(error){
+      Toast.show({
+        type: 'error',
+        text1: "Une erreur s'est produite lors de la sauvegarde des compétences"
+      })
+    }finally{
+      setSaveSkillLoader(false)
+    }
+  }
   return (
     <SafeAreaView style={{ backgroundColor: colors.primary }} >
       <View style={common.container}>
@@ -193,15 +222,55 @@ const StepedStudent = (props) => {
                 </Text>
               </View>
             </View>
+            <View style={{ marginTop: 30 }} >
+            <TouchableOpacity
+                  style={styles.btnContainer}
+                  onPress={handleSaveSkills}
+                  disabled={saveSkillLoader}
+                >
+                  {saveSkillLoader ? (
+                    <ActivityIndicator />
+                  ) : (
+                    <Text style={styles.btnText}>Valider</Text>
+                  )}
+                </TouchableOpacity>
+            </View>
             <ScrollView style={styles.container}>
               {skillsData?.map((data, index) => {
-                return (
-                  <CustomAccordion
-                    key={index}
-                    skillsData={data}
-                    studentId={eventData?.studentGenerals?.id}
-                  />
-                );
+
+                if((skillsData?.length - 1) === index){
+                  return (
+                    <CustomAccordion
+                      key={index}
+                      data={data}
+                      studentId={eventData?.studentGenerals?.id}
+                      setSkillsData={setSkillData}
+                      skillsData={skillsData}
+                      setCheckedSkills={setCheckedSkills}
+                      checkedSkills={checkedSkills}
+                    />
+                  );
+                }else{
+                  let nonUpdatedElement = skillsData[index+1].find((item) => {
+                    return item?.status === "Abordé";
+                  });
+                  if(nonUpdatedElement){
+                    return (<></>)
+                  }else{
+                    return (
+                      <CustomAccordion
+                        key={index}
+                        data={data}
+                        studentId={eventData?.studentGenerals?.id}
+                        setSkillsData={setSkillData}
+                        skillsData={skillsData}
+                        checkedSkills={checkedSkills}
+                        setCheckedSkills={setCheckedSkills}
+                      />
+                    );
+                  }
+                }
+
               })}
             </ScrollView>
           </View>
@@ -217,7 +286,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  updateStudentSkill
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(StepedStudent);
 
@@ -238,6 +309,18 @@ const styles = StyleSheet.create({
     height: "97%",
   },
   container: {
-    marginTop: 30,
+    marginTop: 20,
+  },
+  btnText: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: 500,
+    textAlign: "center",
+  },
+  btnContainer: {
+    backgroundColor: colors.cyan,
+    padding: 10,
+    borderRadius: 10,
+    minWidth: 100,
   },
 });

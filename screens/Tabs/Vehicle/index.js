@@ -72,17 +72,18 @@ function Tabs({
   const [comment, setComment] = useState("");
   const [amount, setAmount] = useState(0);
   const [selectedType, setSelectedType] = useState({});
-  const [document, setDocument] = useState({});
+  const [documents, setDocuments] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [repairId, setRepairId] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedTableData, setSelectedTableData] = useState([]);
-  const [error, setError] = useState({ 
+  const [error, setError] = useState({
     amount: false,
     date: false,
     document: false,
     type: false
-   })
+  })
+  const [deletedDocsIds, setDeletedDocsIds] = useState([])
 
   useEffect(() => {
     if (!repairTypes?.length) {
@@ -102,7 +103,7 @@ function Tabs({
   }, [selectedVehicle?.id]);
 
   useEffect(() => {
-    try{
+    try {
       if (selectedTab === "réparations" && repairs?.length) {
         setSelectedTableData(
           repairs?.map((item) => {
@@ -139,7 +140,7 @@ function Tabs({
       } else {
         setSelectedTableData([]);
       }
-    }catch(error){
+    } catch (error) {
       console.log(error)
     }
   }, [selectedTab, repairs, penalties, reports]);
@@ -185,6 +186,7 @@ function Tabs({
       );
       await getReports(selectedVehicle?.id);
     }
+    setDeletedDocsIds([])
   };
 
   const commonCreate = async (payload, data) => {
@@ -237,27 +239,27 @@ function Tabs({
     try {
       setLoading(true);
 
-      if(!selectedType?.id){
+      if (!selectedType?.id) {
         return setError({ ...error, type: true })
-      }else{
+      } else {
         changeError('type')
       }
 
-      if(!amount){
+      if (!amount) {
         return setError({ ...error, amount: true })
-      }else{
+      } else {
         changeError('amount')
       }
 
-      if(!date){
+      if (!date) {
         return setError({ ...error, date: true })
-      }else{
+      } else {
         changeError('date')
       }
 
-      if(!document?.name){
+      if (!documents?.length) {
         return setError({ ...error, document: true })
-      }else{
+      } else {
         changeError('document')
       }
 
@@ -269,15 +271,15 @@ function Tabs({
         amount,
         comment,
         date,
-        docs: {
-          id: document?.id,
-          document_id: document?.documentId,
-        },
+        deletedDocsIds
       };
-      if (document?.create) {
-        let copyDocument = document;
-        delete copyDocument.create;
-        payload.append(selectedType?.subtype, copyDocument);
+
+      for(let document of documents){
+        if (document?.create) {
+          let copyDocument = document;
+          delete copyDocument.create;
+          payload.append(selectedType?.subtype, copyDocument);
+        }
       }
 
       if (isEdit) {
@@ -310,15 +312,16 @@ function Tabs({
         // return ToastAndroid.show("Unsupported file!", ToastAndroid.SHORT);
       }
       let type = match[1] === "pdf" ? "application/pdf" : `image/${match[1]}`;
-      setDocument({
-        uri: result.uri,
-        name: filename,
-        type,
-        size: result.size,
-        create: true,
-        id: document?.id,
-        documentId: document?.documentId,
-      });
+      setDocuments([
+        ...documents,
+        {
+          uri: result.uri,
+          name: filename,
+          type,
+          size: result.size,
+          create: true
+        }
+      ])
     } catch (error) {
       console.log(error);
     }
@@ -334,55 +337,60 @@ function Tabs({
       selectedTab === "réparations"
         ? data?.repairType
         : selectedTab === "amendes"
-        ? data?.penaltyType
-        : selectedTab === "constats"
-        ? data?.reportType
-        : {}
+          ? data?.penaltyType
+          : selectedTab === "constats"
+            ? data?.reportType
+            : {}
     );
-    let fileName =
-      selectedTab === "réparations"
-        ? data?.repairDoc?.documentRepair?.path
-        : selectedTab === "amendes"
-        ? data?.penaltyDocs?.documentPenalty?.path
-        : selectedTab === "constats"
-        ? data?.reportDocs?.documentReport?.path
-        : "";
-    fileName = fileName?.split("\\");
-    fileName = fileName?.[fileName?.length - 1];
 
-    let id =
-      selectedTab === "réparations"
-        ? data?.repairDoc?.id
-        : selectedTab === "amendes"
-        ? data?.penaltyDocs?.id
-        : selectedTab === "constats"
-        ? data?.reportDocs?.id
-        : undefined;
+    const listedDocs = data?.[ selectedTab === "réparations"
+    ? "repairDoc"
+    : selectedTab === "amendes"
+      ? "penaltyDocs"
+      : selectedTab === "constats" ? 'reportDocs' : ""]?.map((item) => {
 
-    let documentId =
-      selectedTab === "réparations"
-        ? data?.repairDoc?.document_id
-        : selectedTab === "amendes"
-        ? data?.penaltyDocs?.document_id
-        : selectedTab === "constats"
-        ? data?.reportDocs?.document_id
-        : undefined;
 
-    let type =
-      selectedTab === "réparations"
-        ? data?.repairDoc?.documentRepair?.type
-        : selectedTab === "amendes"
-        ? data?.penaltyDocs?.documentPenalty?.type
-        : selectedTab === "constats"
-        ? data?.reportDocs?.documentReport?.type
-        : "";
 
-    setDocument({
-      name: fileName,
-      type,
-      id,
-      documentId,
-    });
+        let fileName =
+          selectedTab === "réparations"
+            ? item?.documentRepair?.path
+            : selectedTab === "amendes"
+              ? item?.documentPenalty?.path
+              : selectedTab === "constats"
+                ? item?.documentReport?.path
+                : "";
+        fileName = fileName?.split("\\");
+        fileName = fileName?.[fileName?.length - 1];
+    
+        let id = item?.id
+    
+        let documentId =
+          selectedTab === "réparations"
+            ? item?.repairDoc?.document_id
+            : selectedTab === "amendes"
+              ? item?.penaltyDocs?.document_id
+              : selectedTab === "constats"
+                ? item?.reportDocs?.document_id
+                : undefined;
+    
+        let type =
+          selectedTab === "réparations"
+            ? item?.documentRepair?.type
+            : selectedTab === "amendes"
+              ? item?.documentPenalty?.type
+              : selectedTab === "constats"
+                ? item?.documentReport?.type
+                : "";
+
+            return {
+              name: fileName,
+              type,
+              id,
+              documentId,
+            }
+
+    })
+    setDocuments(listedDocs)
     setShowForm(true);
   };
 
@@ -393,8 +401,22 @@ function Tabs({
     setDate(new Date());
     setSelectedType({});
     setIsEdit(false);
-    setDocument({})
+    setDocuments([])
+    setDeletedDocsIds([])
+    setError({
+      amount: false,
+      date: false,
+      document: false,
+      type: false
+    })
   };
+
+  const handleRemoveDocument = (index) => {
+    setDeletedDocsIds([...deletedDocsIds, documents[index]?.id])
+    let copyDocuments = documents
+    copyDocuments.splice(index, 1)
+    setDocuments([...copyDocuments])
+  }
 
   const element = (data, index) => (
     <TouchableOpacity
@@ -482,8 +504,8 @@ function Tabs({
                       cellIndex === 0 || cellIndex === 1
                         ? { flex: 2 }
                         : cellIndex === 2
-                        ? { flex: 1.5 }
-                        : { flex: 1, alignItems: "center" }
+                          ? { flex: 1.5 }
+                          : { flex: 1, alignItems: "center" }
                     }
                     textStyle={{ paddingStart: cellIndex === 2 ? 10 : 0 }}
                   />
@@ -502,7 +524,7 @@ function Tabs({
           visible={showForm}
         >
           <View style={styles.modalContainer}>
-            <View style={styles.modalCard}>
+            <ScrollView style={{ ...styles.modalCard, maxHeight: "75%" }} contentContainerStyle={{ rowGap: 20, }} >
               <View
                 style={{
                   flexDirection: "row",
@@ -565,17 +587,33 @@ function Tabs({
                     style={{
                       ...styles.textWithBox,
                       marginBottom: 0,
-                      backgroundColor: document?.name
-                        ? colors.cyan
-                        : colors.gray,
-                        borderColor: 'red',
-                        borderWidth: error?.document ? 1 : 0
+                      backgroundColor: colors.gray,
+                      borderColor: 'red',
+                      borderWidth: error?.document ? 1 : 0
                     }}
                   >
-                    {document?.name ? document.name : "Tap to upload document"}
+                    Tap to upload document
                   </Text>
                 </TouchableOpacity>
-                { error?.document && <Text style={{ color: 'red' }} >document est requis!</Text> }
+                <View style={{ padding: 10, gap: 5, flexDirection: 'row', flexWrap: 'wrap' }} >
+                  {
+                    (documents?.length > 0) && documents?.map((item, index) => {
+                      return (
+                        <View style={{ backgroundColor: colors.cyan, padding: 10, maxWidth: "90%", flexDirection: 'row', alignItems: 'center', columnGap: 10, alignSelf: 'flex-start', borderRadius: 999 }} >
+                          <Text style={{ color: 'white', maxWidth: "85%" }} >{item?.name}</Text>
+                          <TouchableOpacity onPress={() => handleRemoveDocument(index)} >
+                            <AntDesign
+                              name={"closecircleo"}
+                              size={18}
+                              color="white"
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      )
+                    })
+                  }
+                </View>
+                {error?.document && <Text style={{ color: 'red' }} >document est requis!</Text>}
               </View>
               <View>
                 <Text style={styles.labelText}>Type d'amende</Text>
@@ -584,10 +622,10 @@ function Tabs({
                     selectedTab === "réparations"
                       ? repairTypes
                       : selectedTab === "amendes"
-                      ? penaltyTypes
-                      : selectedTab === "constats"
-                      ? reportTypes
-                      : []
+                        ? penaltyTypes
+                        : selectedTab === "constats"
+                          ? reportTypes
+                          : []
                   }
                   defaultValue={selectedType}
                   onSelect={(item) => {
@@ -630,7 +668,7 @@ function Tabs({
                     color: colors.white,
                   }}
                 />
-                { error?.type && <Text style={{ color: 'red' }} >le type d'enregistrement est requis!</Text> }
+                {error?.type && <Text style={{ color: 'red' }} >le type d'enregistrement est requis!</Text>}
               </View>
               <View>
                 <Text style={styles.labelText}>Comment</Text>
@@ -652,13 +690,14 @@ function Tabs({
                   maxLength={10}
                   style={error?.amount ? { ...styles.textInput, borderColor: 'red', borderWidth: 1 } : styles.textInput}
                 />
-                { error?.amount && <Text style={{ color: 'red' }} >le montant est requis!</Text> }
+                {error?.amount && <Text style={{ color: 'red' }} >le montant est requis!</Text>}
               </View>
               <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-evenly",
                   paddingVertical: 20,
+                  marginBottom: 20
                 }}
               >
                 <TouchableOpacity
@@ -683,7 +722,7 @@ function Tabs({
                   <Text style={styles.btnText}>Annuler</Text>
                 </TouchableOpacity>
               </View>
-            </View>
+            </ScrollView>
           </View>
         </Modal>
       </View>
@@ -722,7 +761,7 @@ function Vehicle({
 
   useEffect(() => {
     if (selectedVehicle?.id) {
-        fetchVehicleData(selectedVehicle?.id);
+      fetchVehicleData(selectedVehicle?.id);
     }
   }, [selectedVehicle]);
 
@@ -737,7 +776,7 @@ function Vehicle({
   // useEffect(() => {
   //   getVehicles()
   // }, [])
-  
+
   useFocusEffect(
     useCallback(() => {
       setSelectedVehicle({})

@@ -9,6 +9,7 @@ import {
   ToastAndroid,
   ActivityIndicator,
   FlatList,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "../../styles/colors";
@@ -149,6 +150,16 @@ function ButtonCard({ eventData, updateEvent, getAllEvents, events }) {
                 >
                   <Text style={styles.cardBtnText}>Erreur de planning</Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => handleChangeMotif("Instructeur absent")}
+                  style={
+                    selectedMotif === "Instructeur absent"
+                      ? styles.cardFillBtn
+                      : styles.cardOutlineBtn
+                  }
+                >
+                  <Text style={styles.cardBtnText}>Instructeur absent</Text>
+                </TouchableOpacity>
               </View>
             </>
           )}
@@ -188,10 +199,11 @@ function App({ events, getAllEvents, updateEvent, loading }) {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [upcomingEventsLite, setUpcomingEventsLite] = useState([]);
   const [loader, setLoader] = useState(false);
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     setLoader(true);
-    if(!events?.length){
+    if (!events?.length) {
       getAllEvents()
         .then()
         .catch()
@@ -205,7 +217,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
       let pastEventsData = [];
       let upcomingEventsData = [];
 
-      events?.map((event) => {
+      events?.filter((item) => (item?.status === "pending"))?.map((event) => {
         if (moment(event?.start_horary, "YYYY-MM-DD HH:mm:ss").isAfter(moment())) {
           upcomingEventsData.push(event);
         } else {
@@ -261,6 +273,17 @@ function App({ events, getAllEvents, updateEvent, loading }) {
   //   }
   // }, [pastEvents])
 
+  const handleRefresh = async () => {
+    try {
+      setRefreshing(true)
+      await getAllEvents()
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
   return (
     <SafeAreaView style={{ backgroundColor: colors.primary }} >
       <StatusBar backgroundColor={colors.primary} />
@@ -268,76 +291,79 @@ function App({ events, getAllEvents, updateEvent, loading }) {
         <View style={common.headerPart}>
           <Text style={common.headerText}>Événements à venir</Text>
         </View>
-        <View style={{...common.mainContent, maxHeight: "40%" }}>
+        <View style={{ ...common.mainContent, maxHeight: "40%" }}>
           <View style={styles.cardPart}>
             {loader ? (
               <ActivityIndicator />
             ) : (
               <>
-              <FlatList 
-                data={upcomingEvents}
-                renderItem={( {item:eventData, index} ) => {
-                  return (
-                    <View style={styles.cardBox} key={index} >
-                      <View style={common.cardTextPart}>
-                        <View style={common.leftText}>
-                          <Text style={common.contentText}>
-                            {eventData?.studentGenerals?.firstname}{" "}
-                            {eventData?.studentGenerals?.lastname} |{" "}
-                            {eventData?.studentGenerals?.mobile}
-                          </Text>
-                          <Text style={common.contentText}>
-                            Boîte : {eventData?.gearbox}
-                          </Text>
-                          <Text style={common.contentText}>
-                            Type : {eventData?.type}
-                          </Text>
+                <FlatList
+                  data={upcomingEvents}
+                  renderItem={({ item: eventData, index }) => {
+                    return (
+                      <View style={styles.cardBox} key={index} >
+                        <View style={common.cardTextPart}>
+                          <View style={common.leftText}>
+                            <Text style={common.contentText}>
+                              {eventData?.studentGenerals?.firstname}{" "}
+                              {eventData?.studentGenerals?.lastname} |{" "}
+                              {eventData?.studentGenerals?.mobile}
+                            </Text>
+                            <Text style={common.contentText}>
+                              Boîte : {eventData?.gearbox}
+                            </Text>
+                            <Text style={common.contentText}>
+                              Type : {eventData?.type}
+                            </Text>
+                          </View>
+                          <View style={common.rightText}>
+                            <Text
+                              style={{
+                                ...common.contentText,
+                                ...common.contentTextRight,
+                              }}
+                            >
+                              {moment(eventData?.start_horary).format(
+                                "DD/MM/YYYY"
+                              )}
+                            </Text>
+                            <Text
+                              style={{
+                                ...common.contentText,
+                                ...common.contentTextRight,
+                              }}
+                            >
+                              {moment(eventData?.start_horary).format("HH[h]mm")}
+                            </Text>
+                            <Text
+                              style={{
+                                ...common.contentText,
+                                ...common.contentTextRight,
+                              }}
+                            >
+                              {moment(eventData?.end_horary).diff(
+                                moment(eventData?.start_horary),
+                                "hours"
+                              )}
+                              h
+                            </Text>
+                          </View>
                         </View>
-                        <View style={common.rightText}>
-                          <Text
-                            style={{
-                              ...common.contentText,
-                              ...common.contentTextRight,
-                            }}
-                          >
-                            {moment(eventData?.start_horary).format(
-                              "DD/MM/YYYY"
-                            )}
-                          </Text>
-                          <Text
-                            style={{
-                              ...common.contentText,
-                              ...common.contentTextRight,
-                            }}
-                          >
-                            {moment(eventData?.start_horary).format("HH[h]mm")}
-                          </Text>
-                          <Text
-                            style={{
-                              ...common.contentText,
-                              ...common.contentTextRight,
-                            }}
-                          >
-                            {moment(eventData?.end_horary).diff(
-                              moment(eventData?.start_horary),
-                              "hours"
-                            )}
-                            h
-                          </Text>
-                        </View>
+                        <ButtonCard
+                          loading={loading}
+                          eventData={eventData}
+                          updateEvent={updateEvent}
+                          getAllEvents={getAllEvents}
+                          events={events}
+                        />
                       </View>
-                      <ButtonCard
-                        loading={loading}
-                        eventData={eventData}
-                        updateEvent={updateEvent}
-                        getAllEvents={getAllEvents}
-                        events={events}
-                      />
-                    </View>
-                  );
-                }}
-                keyExtractor={(eventData) => eventData?.id}
-              />
+                    );
+                  }}
+                  keyExtractor={(eventData) => eventData?.id}
+                  refreshControl={
+                    <RefreshControl enabled={true} refreshing={refreshing} onRefresh={handleRefresh} />
+                  }
+                />
                 {/* {upcomingEventsLite?.map((eventData, index) => {
                   return (
                     <View style={styles.cardBox} key={index}>
@@ -417,89 +443,97 @@ function App({ events, getAllEvents, updateEvent, loading }) {
         <View style={common.headerPart}>
           <Text style={common.headerText}>événements passés à confirmer</Text>
         </View>
-        <View style={{...common.mainContent }}>
+
+        <View style={{ ...common.mainContent }}>
           <View style={styles.cardPart}>
             {loader ? (
               <ActivityIndicator />
             ) : (
               <>
-              <FlatList 
-                data={pastEvents}
-                renderItem={( {item:eventData, index} ) => {
-                  return (
-                    <View
-                      key={index}
-                      style={{ ...styles.cardBox, ...styles.cardBoxGray }}
-                    >
-                      <View style={common.cardTextPart}>
-                        <View style={common.leftText}>
-                          <Text style={common.contentText}>
-                            {eventData?.studentGenerals?.firstname}{" "}
-                            {eventData?.studentGenerals?.lastname} |{" "}
-                            {eventData?.studentGenerals?.mobile}
-                          </Text>
-                          <Text style={common.contentText}>
-                            Boîte : {eventData?.gearbox}
-                          </Text>
-                          <Text style={common.contentText}>
-                            Type : {eventData?.type}
-                          </Text>
+                <FlatList
+                  data={pastEvents}
+                  renderItem={({ item: eventData, index }) => {
+                    return (
+                      <View
+                        key={index}
+                        style={{ ...styles.cardBox, ...styles.cardBoxGray }}
+                      >
+                        <View style={common.cardTextPart}>
+                          <View style={common.leftText}>
+                            <Text style={common.contentText}>
+                              {eventData?.studentGenerals?.firstname}{" "}
+                              {eventData?.studentGenerals?.lastname} |{" "}
+                              {eventData?.studentGenerals?.mobile}
+                            </Text>
+                            <Text style={common.contentText}>
+                              Boîte : {eventData?.gearbox}
+                            </Text>
+                            <Text style={common.contentText}>
+                              Type : {eventData?.type}
+                            </Text>
+                          </View>
+                          <View style={common.rightText}>
+                            <Text
+                              style={{
+                                ...common.contentText,
+                                ...common.contentTextRight,
+                              }}
+                            >
+                              {moment(eventData?.start_horary).format(
+                                "DD/MM/YYYY"
+                              )}
+                            </Text>
+                            <Text
+                              style={{
+                                ...common.contentText,
+                                ...common.contentTextRight,
+                              }}
+                            >
+                              {moment(eventData?.start_horary).format("HH[h]mm")}
+                            </Text>
+                            <Text
+                              style={{
+                                ...common.contentText,
+                                ...common.contentTextRight,
+                              }}
+                            >
+                              {moment(eventData?.end_horary).diff(
+                                moment(eventData?.start_horary),
+                                "hours"
+                              )}
+                              h
+                            </Text>
+                          </View>
                         </View>
-                        <View style={common.rightText}>
-                          <Text
-                            style={{
-                              ...common.contentText,
-                              ...common.contentTextRight,
-                            }}
-                          >
-                            {moment(eventData?.start_horary).format(
-                              "DD/MM/YYYY"
-                            )}
-                          </Text>
-                          <Text
-                            style={{
-                              ...common.contentText,
-                              ...common.contentTextRight,
-                            }}
-                          >
-                            {moment(eventData?.start_horary).format("HH[h]mm")}
-                          </Text>
-                          <Text
-                            style={{
-                              ...common.contentText,
-                              ...common.contentTextRight,
-                            }}
-                          >
-                            {moment(eventData?.end_horary).diff(
-                              moment(eventData?.start_horary),
-                              "hours"
-                            )}
-                            h
-                          </Text>
-                        </View>
+                        <ButtonCard
+                          loading={loading}
+                          eventData={eventData}
+                          updateEvent={updateEvent}
+                          getAllEvents={getAllEvents}
+                        />
                       </View>
-                      <ButtonCard
-                        loading={loading}
-                        eventData={eventData}
-                        updateEvent={updateEvent}
-                        getAllEvents={getAllEvents}
-                      />
-                    </View>
-                  );
-                }}
-                keyExtractor={(eventData) => eventData?.id}
-              />
+                    );
+                  }}
+                  keyExtractor={(eventData) => eventData?.id}
+                  refreshControl={
+                    <RefreshControl enabled={true} refreshing={refreshing} onRefresh={handleRefresh} />
+                  }
+                />
                 {pastEvents?.length < 1 && (
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      color: "white",
-                      marginTop: 20,
-                      fontSize: 16,
-                    }}
-                  >
-                    No records found!
-                  </Text>
+                  <ScrollView refreshControl={
+                    <RefreshControl enabled refreshing={refreshing} onRefresh={handleRefresh} />
+                  } >
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        color: "white",
+                        marginTop: 20,
+                        fontSize: 16,
+                      }}
+                    >
+                      No records found!
+                    </Text>
+                  </ScrollView>
                 )}
               </>
             )}
