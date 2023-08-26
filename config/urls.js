@@ -21,3 +21,4 @@ export const repairs = (id='')=> `/repairs/${id}`
 export const reports = (id='')=> `/reports/${id}`
 export const penalties = (id='')=> `/penalties/${id}`
 export const examWishlists = (id='')=> `/examWishlists/${id}`
+export const statistics = (id='')=> `/statistics/${id}`

@@ -310,7 +310,10 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                               {eventData?.studentGenerals?.mobile}
                             </Text>
                             <Text style={common.contentText}>
-                              Boîte : {eventData?.gearbox}
+                              Boîte : {eventData?.studentGenerals?.licenceStudents?.name}
+                            </Text>
+                            <Text style={common.contentText}>
+                            Véhicule : {eventData?.planningVehicle?.name}
                             </Text>
                             <Text style={common.contentText}>
                               Type : {eventData?.type}
@@ -466,7 +469,10 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                               {eventData?.studentGenerals?.mobile}
                             </Text>
                             <Text style={common.contentText}>
-                              Boîte : {eventData?.gearbox}
+                              Boîte : {eventData?.studentGenerals?.licenceStudents?.name}
+                            </Text>
+                            <Text style={common.contentText}>
+                            Véhicule : {eventData?.planningVehicle?.name}
                             </Text>
                             <Text style={common.contentText}>
                               Type : {eventData?.type}
@@ -514,6 +520,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                       </View>
                     );
                   }}
+                  style={{ marginBottom: !upcomingEvents?.length ? 150 : 300 }}
                   keyExtractor={(eventData) => eventData?.id}
                   refreshControl={
                     <RefreshControl enabled={true} refreshing={refreshing} onRefresh={handleRefresh} />

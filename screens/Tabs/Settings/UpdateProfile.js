@@ -7,11 +7,13 @@ import colors from "../../../styles/colors";
 import { connect, useSelector } from "react-redux";
 import { updateProfile } from "../../../services/Auth/actions";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { useNavigation } from "@react-navigation/native";
 
 const UpdateProfile = ({
     updateProfile
 }) => {
 
+  const navigation = useNavigation()
     const [loading, setLoading] = useState(false)
     const [lastname, setLastname] = useState("")
     const [firstname, setFirstname] = useState("")
@@ -63,6 +65,7 @@ const UpdateProfile = ({
     const handleCancel = () => {
         setFirstname(userData?.firstname)
         setLastname(userData?.lastname)
+        navigation.goBack()
     }
 
   return (

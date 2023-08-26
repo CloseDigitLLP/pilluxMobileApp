@@ -7,6 +7,7 @@ import repairsReducer from './Repairs/reducers'
 import penaltiesReducer from './Penalties/reducers'
 import reportsReducer from './Reports/reducers'
 import examWishlistReducer from './ExamWishlist/reducers'
+import statisticsReducer from './Statistics/reducers'
 
 const rootReducer = combineReducers({
     authReducer,
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
     repairsReducer,
     penaltiesReducer,
     reportsReducer,
-    examWishlistReducer
+    examWishlistReducer,
+    statisticsReducer
 })
 
 export default rootReducer

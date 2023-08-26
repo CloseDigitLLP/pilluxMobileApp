@@ -19,8 +19,10 @@ import { changePassword } from "../../../services/Auth/actions";
 import { connect } from "react-redux";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { Entypo } from "react-native-vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 const ChangePassword = ({ changePassword }) => {
+  const navigation = useNavigation()
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -110,6 +112,7 @@ const ChangePassword = ({ changePassword }) => {
 
   const handleCancel = () => {
     clearStates()
+    navigation.goBack()
   };
   
   const clearStates = () => {
