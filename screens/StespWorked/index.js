@@ -251,10 +251,10 @@ const StepedStudent = (props) => {
                     />
                   );
                 }else{
-                  let nonUpdatedElement = skillsData[index+1].find((item) => {
-                    return item?.status === "Abordé";
+                  let updatedItems = skillsData[index+1].filter((item) => {
+                    return item?.status === "Assimilé";
                   });
-                  if(nonUpdatedElement){
+                  if(updatedItems.length !== skillsData[index+1].length){
                     return (<></>)
                   }else{
                     return (

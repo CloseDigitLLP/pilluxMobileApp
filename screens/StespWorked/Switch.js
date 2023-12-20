@@ -14,7 +14,7 @@ import { updateStudentSkill } from "../../services/Students/actions";
 import { getAllEvents, updateLocalEvents } from "../../services/Events/actions";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 
-const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, getAllEvents, events, updateLocalEvents, setSkillsData, skillsData, checkedSkills, setCheckedSkills }) => {
+const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, getAllEvents, events, updateLocalEvents, setSkillsData, skillsData, checkedSkills, setCheckedSkills, currentSkillIndex, data }) => {
 
     // Abordé => 1
     // Traité => 2
@@ -43,12 +43,13 @@ const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, ge
   const handleStatusChange = async () => {
     try{
 
-      if(switchState === 3){ return; }
-
       let payloadData = {
         student_id: studentId,
         skill_id: skillData?.id,
-        status: switchState === 1 ? "Traité" : "Assimilé" 
+        status: switchState === 1 ? "Traité" : switchState === 2 ? "Assimilé" : "Abordé" 
+      }
+      if(switchState === 3){
+        setSwitchState(1)
       }
       skillData?.student_skill_id && (payloadData['id'] = skillData?.student_skill_id)
 
@@ -87,7 +88,7 @@ const ThreeStateSwitch = ({ status, skillData, updateStudentSkill, studentId, ge
           if(skill?.id === skillData?.id){
             return {
               ...skill,
-              status: switchState === 1 ? "Traité" : "Assimilé"
+              status: switchState === 1 ? "Traité" : switchState === 2 ? "Assimilé" : "Abordé" 
             }
           }else{
             return {

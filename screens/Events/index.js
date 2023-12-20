@@ -284,6 +284,13 @@ function App({ events, getAllEvents, updateEvent, loading }) {
     }
   }
 
+  const utcToLocal = (utcDateString, format) => {
+    let utcMoment = moment.utc(utcDateString);
+    let localMoment = utcMoment.local();
+    const localDateString = localMoment.format(format);
+    return localDateString
+}
+
   return (
     <SafeAreaView style={{ backgroundColor: colors.primary }} >
       <StatusBar backgroundColor={colors.primary} />
@@ -326,9 +333,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                                 ...common.contentTextRight,
                               }}
                             >
-                              {moment(eventData?.start_horary).format(
-                                "DD/MM/YYYY"
-                              )}
+                              {utcToLocal(eventData?.start_horary, "DD/MM/YYYY")}
                             </Text>
                             <Text
                               style={{
@@ -336,7 +341,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                                 ...common.contentTextRight,
                               }}
                             >
-                              {moment(eventData?.start_horary).format("HH[h]mm")}
+                              {utcToLocal(eventData?.start_horary, "HH[h]mm")}
                             </Text>
                             <Text
                               style={{
@@ -362,6 +367,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                       </View>
                     );
                   }}
+                  style={{ paddingTop: upcomingEvents?.length > 0 ? 0 : 20 }}
                   keyExtractor={(eventData) => eventData?.id}
                   refreshControl={
                     <RefreshControl enabled={true} refreshing={refreshing} onRefresh={handleRefresh} />
@@ -432,7 +438,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                     style={{
                       textAlign: "center",
                       color: "white",
-                      marginTop: 20,
+                      // marginTop: 20,
                       fontSize: 16,
                     }}
                   >
@@ -485,9 +491,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                                 ...common.contentTextRight,
                               }}
                             >
-                              {moment(eventData?.start_horary).format(
-                                "DD/MM/YYYY"
-                              )}
+                              {utcToLocal(eventData?.start_horary, "DD/MM/YYYY")}
                             </Text>
                             <Text
                               style={{
@@ -495,7 +499,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                                 ...common.contentTextRight,
                               }}
                             >
-                              {moment(eventData?.start_horary).format("HH[h]mm")}
+                              {utcToLocal(eventData?.start_horary, "HH[h]mm")}
                             </Text>
                             <Text
                               style={{
@@ -520,7 +524,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
                       </View>
                     );
                   }}
-                  style={{ marginBottom: !upcomingEvents?.length ? 150 : 300 }}
+                  style={{ marginBottom: !upcomingEvents?.length ? 150 : 300, paddingTop: pastEvents?.length > 0 ? 0 : 120 }}
                   keyExtractor={(eventData) => eventData?.id}
                   refreshControl={
                     <RefreshControl enabled={true} refreshing={refreshing} onRefresh={handleRefresh} />
