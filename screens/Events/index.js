@@ -101,13 +101,13 @@ function ButtonCard({ eventData, updateEvent, getAllEvents, events }) {
       ) : (
         <View style={styles.cardBtn}>
           <TouchableOpacity
-            style={styles.cardOutlineBtn}
+            style={showOption === "present" ? styles.cardFillBtn : styles.cardOutlineBtn}
             onPress={() => setShowOption("present")}
           >
             <Text style={styles.cardBtnText}>Present</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.cardFillBtn}
+            style={showOption === "absent" ? styles.cardFillBtn : styles.cardOutlineBtn}
             onPress={() => setShowOption("absent")}
           >
             <Text style={styles.cardBtnText}>Absent</Text>
@@ -218,7 +218,7 @@ function App({ events, getAllEvents, updateEvent, loading }) {
       let upcomingEventsData = [];
 
       events?.filter((item) => (item?.status === "pending"))?.map((event) => {
-        if (moment(event?.start_horary, "YYYY-MM-DD HH:mm:ss").isAfter(moment())) {
+        if (moment(utcToLocal(event?.start_horary, "YYYY-MM-DD HH:mm:ss"), "YYYY-MM-DD HH:mm:ss").isAfter(moment())) {
           upcomingEventsData.push(event);
         } else {
           pastEventsData.push(event);
@@ -226,8 +226,8 @@ function App({ events, getAllEvents, updateEvent, loading }) {
       });
 
       pastEventsData.sort((a, b) => {
-        const timeA = moment(a.start_horary, "YYYY-MM-DD HH:mm:ss");
-        const timeB = moment(b.start_horary, "YYYY-MM-DD HH:mm:ss");
+        const timeA = moment(utcToLocal(a.start_horary, "YYYY-MM-DD HH:mm:ss"), "YYYY-MM-DD HH:mm:ss");
+        const timeB = moment(utcToLocal(b.start_horary, "YYYY-MM-DD HH:mm:ss"), "YYYY-MM-DD HH:mm:ss");
 
         if (timeA.isBefore(timeB)) {
           return 1;
@@ -239,8 +239,8 @@ function App({ events, getAllEvents, updateEvent, loading }) {
       });
 
       upcomingEventsData.sort((a, b) => {
-        const timeA = moment(a.start_horary, "YYYY-MM-DD HH:mm:ss");
-        const timeB = moment(b.start_horary, "YYYY-MM-DD HH:mm:ss");
+        const timeA = moment(utcToLocal(a.start_horary, "YYYY-MM-DD HH:mm:ss"), "YYYY-MM-DD HH:mm:ss");
+        const timeB = moment(utcToLocal(b.start_horary, "YYYY-MM-DD HH:mm:ss"), "YYYY-MM-DD HH:mm:ss");
 
         if (timeA.isBefore(timeB)) {
           return -1; // Return -1 for ascending order (oldest to latest)

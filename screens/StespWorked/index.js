@@ -167,18 +167,18 @@ const StepedStudent = (props) => {
   }, [props.events, eventId]);
 
   const handleSaveSkills = async () => {
-    try{
+    try {
       setSaveSkillLoader(true)
-      if(checkedSkills?.length>0){
+      if (checkedSkills?.length > 0) {
         await props?.updateStudentSkill(checkedSkills)
       }
       navigation.goBack()
-    }catch(error){
+    } catch (error) {
       Toast.show({
         type: 'error',
         text1: "Une erreur s'est produite lors de la sauvegarde des compétences"
       })
-    }finally{
+    } finally {
       setSaveSkillLoader(false)
     }
   }
@@ -223,22 +223,22 @@ const StepedStudent = (props) => {
               </View>
             </View>
             <View style={{ marginTop: 30 }} >
-            <TouchableOpacity
-                  style={styles.btnContainer}
-                  onPress={handleSaveSkills}
-                  disabled={saveSkillLoader}
-                >
-                  {saveSkillLoader ? (
-                    <ActivityIndicator />
-                  ) : (
-                    <Text style={styles.btnText}>Valider</Text>
-                  )}
-                </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.btnContainer}
+                onPress={handleSaveSkills}
+                disabled={saveSkillLoader}
+              >
+                {saveSkillLoader ? (
+                  <ActivityIndicator />
+                ) : (
+                  <Text style={styles.btnText}>Valider</Text>
+                )}
+              </TouchableOpacity>
             </View>
             <ScrollView style={styles.container}>
               {skillsData?.map((data, index) => {
 
-                if((skillsData?.length - 1) === index){
+                if ((skillsData?.length - 1) === index) {
                   return (
                     <CustomAccordion
                       key={index}
@@ -250,13 +250,27 @@ const StepedStudent = (props) => {
                       checkedSkills={checkedSkills}
                     />
                   );
-                }else{
-                  let updatedItems = skillsData[index+1].filter((item) => {
+                } else {
+                  let updatedItems = skillsData[index + 1].filter((item) => {
                     return item?.status === "Assimilé";
                   });
-                  if(updatedItems.length !== skillsData[index+1].length){
+                  if (updatedItems.length !== skillsData[index + 1].length) {
+                    if (skillsData[index]?.find(item => item?.status !== "Abordé")) {
+                      setSkillData(skillsData?.map((item, levelIndex) => {
+                        if (levelIndex === index) {
+                          return item?.map((ele) => {
+                            return {
+                              ...ele,
+                              status: "Abordé"
+                            }
+                          })
+                        } else {
+                          return item
+                        }
+                      }))
+                    }
                     return (<></>)
-                  }else{
+                  } else {
                     return (
                       <CustomAccordion
                         key={index}
